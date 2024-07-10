@@ -84,4 +84,9 @@ public class DepartureInfo {
     public void setPrice(double price) {
         this.price = price;
     }
+
+    @Override
+    public String toString() {
+        return "From " + originAirportCode + " to " + destinationAirportCode + " at " + departureAt + " for " + price;
+    }
 }
