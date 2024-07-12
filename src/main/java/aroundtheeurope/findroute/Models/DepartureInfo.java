@@ -10,23 +10,63 @@ public class DepartureInfo {
     private String originAirportName;
     @JsonProperty("originAirportCode")
     private String originAirportCode;
+    @JsonProperty("originCountryCode")
+    private String originCountryCode;
     @JsonProperty("destinationAirportName")
     private String destinationAirportName;
     @JsonProperty("destinationAirportCode")
     private String destinationAirportCode;
+    @JsonProperty("destinationCountryCode")
+    private String destinationCountryCode;
     @JsonProperty("price")
     private double price;
+    @JsonProperty("currencyCode")
+    private String currencyCode;
 
-    public DepartureInfo (String flightNumber, String departureAt, String originAirportName,
-                        String originAirportCode, String destinationAirportName, String destinationAirportCode,
-                        double price) {
+    public DepartureInfo (String flightNumber,
+                          String departureAt,
+                          String originAirportName,
+                          String originAirportCode,
+                          String originCountryCode,
+                          String destinationAirportName,
+                          String destinationAirportCode,
+                          String destinationCountryCode,
+                          double price,
+                          String currencyCode) {
         this.flightNumber = flightNumber;
         this.departureAt = departureAt;
         this.originAirportName = originAirportName;
         this.originAirportCode = originAirportCode;
+        this.originCountryCode = originCountryCode;
         this.destinationAirportName = destinationAirportName;
         this.destinationAirportCode = destinationAirportCode;
+        this.destinationCountryCode = destinationCountryCode;
         this.price = price;
+        this.currencyCode = currencyCode;
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
+    }
+
+    public String getDestinationCountryCode() {
+        return destinationCountryCode;
+    }
+
+    public void setDestinationCountryCode(String destinationCountryCode) {
+        this.destinationCountryCode = destinationCountryCode;
+    }
+
+    public String getOriginCountryCode() {
+        return originCountryCode;
+    }
+
+    public void setOriginCountryCode(String originCountryCode) {
+        this.originCountryCode = originCountryCode;
     }
 
     public String getFlightNumber() {
