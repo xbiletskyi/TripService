@@ -1,18 +1,17 @@
 package aroundtheeurope.findroute.Controllers;
 
-
 import aroundtheeurope.findroute.Models.FoundTrip;
 import aroundtheeurope.findroute.Services.RouteFinder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Controller
+@RestController
 public class FindRouteController {
     @Autowired
     private final RouteFinder routeFinder;
@@ -30,8 +29,23 @@ public class FindRouteController {
                                                      @RequestParam("maxStay") int maxStay,
                                                      @RequestParam(value = "schengenOnly", defaultValue = "false") boolean schengenOnly,
                                                      @RequestParam(value = "timeLimitSeconds", defaultValue = "10") int timeLimit) {
-        List<FoundTrip> routes = routeFinder.findRoute(origin, destination, departureAt, maxStay,
-                budget, timeLimit, schengenOnly);
-        return ResponseEntity.ok(routes);
+        try {
+            if (origin == null || origin.isEmpty() ||
+                    destination == null || destination.isEmpty() ||
+                    departureAt == null || departureAt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            }
+
+            List<FoundTrip> routes = routeFinder.findRoute(origin, destination, departureAt, maxStay, budget, timeLimit, schengenOnly);
+
+            if (routes.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+            }
+
+            return ResponseEntity.ok(routes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 }
