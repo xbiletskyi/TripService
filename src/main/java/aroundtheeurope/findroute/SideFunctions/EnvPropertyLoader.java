@@ -8,6 +8,9 @@ import io.github.cdimascio.dotenv.Dotenv;
  */
 public class EnvPropertyLoader {
 
+    /**
+     * Loads properties from the .env file and sets them as system properties.
+     */
     public static void loadProperties() {
         Dotenv dotenv = Dotenv.load();
         // Map .env variables to Spring Boot's property names and set them as system properties

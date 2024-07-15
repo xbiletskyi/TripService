@@ -1,6 +1,9 @@
 package aroundtheeurope.findroute.Models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Model class representing departure information.
+ */
 public class DepartureInfo {
     @JsonProperty("flightNumber")
     private String flightNumber;
@@ -23,6 +26,20 @@ public class DepartureInfo {
     @JsonProperty("currencyCode")
     private String currencyCode;
 
+    /**
+     * Constructor for DepartureInfo.
+     *
+     * @param flightNumber          the flight number
+     * @param departureAt           the departure date and time
+     * @param originAirportName     the name of the origin airport
+     * @param originAirportCode     the IATA code of the origin airport
+     * @param originCountryCode     the ISO country code of the origin country
+     * @param destinationAirportName the name of the destination airport
+     * @param destinationAirportCode the IATA code of the destination airport
+     * @param destinationCountryCode the ISO country code of the destination country
+     * @param price                 the price of the flight
+     * @param currencyCode          the ISO currency code
+     */
     public DepartureInfo (String flightNumber,
                           String departureAt,
                           String originAirportName,
@@ -45,6 +62,7 @@ public class DepartureInfo {
         this.currencyCode = currencyCode;
     }
 
+    // Getters and setters
     public String getCurrencyCode() {
         return currencyCode;
     }

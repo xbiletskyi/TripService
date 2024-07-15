@@ -15,6 +15,9 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * Service implementation for retrieving departure information.
+ */
 @Service
 public class DepartureServiceImpl implements DepartureService {
     private final RestTemplate restTemplate;
@@ -29,12 +32,26 @@ public class DepartureServiceImpl implements DepartureService {
     @Value("${spring.security.user.password}")
     String authPassword;
 
+    /**
+     * Constructor for DepartureServiceImpl.
+     *
+     * @param restTemplate the RestTemplate to make HTTP requests
+     * @param objectMapper the ObjectMapper to serialize and deserialize objects
+     */
     @Autowired
     public DepartureServiceImpl(RestTemplate restTemplate, ObjectMapper objectMapper) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * Retrieves departure information from the TakeFlights microservice.
+     *
+     * @param airportCode the IATA code of the airport
+     * @param date the date of departure
+     * @param schengenOnly if true, only includes flights within the Schengen Area
+     * @return the list of DepartureInfo
+     */
     @Override
     public List<DepartureInfo> getDepartures(String airportCode, String date, boolean schengenOnly){
         String url = takeFlightsUrl + "origin=" + airportCode + "&departure_at=" + date + "&schengenOnly=" + schengenOnly;

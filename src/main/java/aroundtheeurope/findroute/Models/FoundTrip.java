@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Model class representing a found trip.
+ */
 public class FoundTrip {
     @JsonProperty("totalPrice")
     double totalPrice;
@@ -22,6 +25,17 @@ public class FoundTrip {
     @JsonProperty("tripSchedule")
     List<DepartureInfo> tripSchedule;
 
+    /**
+     * Constructor for FoundTrip.
+     *
+     * @param totalPrice      the total price of the trip
+     * @param totalFlights    the total number of flights in the trip
+     * @param uniqueCities    the number of unique cities visited
+     * @param uniqueCountries the number of unique countries visited
+     * @param departureAt     the departure date and time
+     * @param arrivalAt       the arrival date and time
+     * @param tripSchedule    the schedule of the trip
+     */
     public FoundTrip(double totalPrice,
                      int totalFlights,
                      int uniqueCities,
@@ -38,6 +52,12 @@ public class FoundTrip {
         this.tripSchedule = tripSchedule;
     }
 
+    /**
+     * Creates a FoundTrip object from a trip schedule (list of DepartureInfo objects).
+     *
+     * @param path the list of DepartureInfo representing the trip
+     * @return a FoundTrip object
+     */
     public static FoundTrip createFoundTrip(List<DepartureInfo> path){
         double totalPrice = 0;
         Set<String> uniqueCities = new HashSet<>();
@@ -60,6 +80,7 @@ public class FoundTrip {
         );
     }
 
+    // Getters and setters
     public int getTotalFlights() {
         return totalFlights;
     }
