@@ -1,7 +1,8 @@
 # FindRoute Microservice
 
 ## Introduction
-The 'FindRoute' microservice is part of a larger project to find "Chained trip" between two airports. This documentation covers the technical details of this microservice only.
+The 'FindRoute' microservice is part of a larger project to find "Chained trip" between two airports. This documentation covers the technical details of this microservice only.  
+[The overall project description](https://medium.com/@vidime.sa.buduci.rok/explore-europe-by-plane-using-this-tool-0cb52ac69b8b).
 
 ## Purpose Overview
 The microservice looks for all feasible routes which satisfy the given parameters. This is the main logical core of the project designed to find adequate routes effectively.
