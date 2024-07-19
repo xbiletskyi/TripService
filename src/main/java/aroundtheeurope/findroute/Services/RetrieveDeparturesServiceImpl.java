@@ -19,11 +19,11 @@ import java.util.*;
  * Service implementation for retrieving departure information.
  */
 @Service
-public class DepartureServiceImpl implements DepartureService {
+public class RetrieveDeparturesServiceImpl implements RetrieveDeparturesService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
-    @Value("${TakeFlights.url}")
+    @Value("${FlightService.url}")
     String takeFlightsUrl;
 
     @Value("${spring.security.user.name}")
@@ -39,7 +39,7 @@ public class DepartureServiceImpl implements DepartureService {
      * @param objectMapper the ObjectMapper to serialize and deserialize objects
      */
     @Autowired
-    public DepartureServiceImpl(RestTemplate restTemplate, ObjectMapper objectMapper) {
+    public RetrieveDeparturesServiceImpl(RestTemplate restTemplate, ObjectMapper objectMapper) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
     }
@@ -53,8 +53,11 @@ public class DepartureServiceImpl implements DepartureService {
      * @return the list of DepartureInfo
      */
     @Override
-    public List<DepartureInfo> getDepartures(String airportCode, String date, boolean schengenOnly){
-        String url = takeFlightsUrl + "origin=" + airportCode + "&departure_at=" + date + "&schengenOnly=" + schengenOnly;
+    public List<DepartureInfo> retrieveDepartures(String airportCode, String date, int daysRange, boolean schengenOnly){
+        String url = takeFlightsUrl + "origin=" + airportCode
+                + "&departureAt=" + date
+                + "&schengenOnly=" + schengenOnly
+                + "&daysRange=" + daysRange;
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "application/json");
         String auth = authUsername + ":" + authPassword;
@@ -62,11 +65,12 @@ public class DepartureServiceImpl implements DepartureService {
         String authHeader = "Basic " + encodedAuth;
         headers.set("Authorization", authHeader);
 
-        HttpEntity<String> entity = new HttpEntity<String>(headers);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
         List<DepartureInfo> departureInfos = null;
         try{
-            departureInfos = objectMapper.readValue(response.getBody(), new TypeReference<List<DepartureInfo>>(){});
+            departureInfos = objectMapper.readValue(response.getBody(), new TypeReference<>() {
+            });
         }
         catch (IOException e){
             e.printStackTrace();

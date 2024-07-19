@@ -4,11 +4,12 @@ import aroundtheeurope.findroute.Models.DepartureInfo;
 import aroundtheeurope.findroute.Models.FoundTrip;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.*;
@@ -18,7 +19,18 @@ import java.util.concurrent.*;
  */
 @Service
 public class RouteFinderImpl implements RouteFinder{
-    private final DepartureService departureService;
+
+    private final RetrieveDeparturesService departureService;
+
+    // Heuristic factor weights injected from properties
+    @Value("${RouteFinder.heuristic.priceFactorWeight}")
+    double priceFactorWeight;
+
+    @Value("${RouteFinder.heuristic.uniqueCitiesFactorWeight}")
+    double uniqueCitiesFactorWeight;
+
+    @Value("${RouteFinder.heuristic.lengthFactorWeight}")
+    double lengthFactorWeight;
 
     /**
      * Constructor for RouteFinderImpl.
@@ -26,7 +38,7 @@ public class RouteFinderImpl implements RouteFinder{
      * @param departureService the service used to retrieve departures
      */
     @Autowired
-    public RouteFinderImpl(DepartureService departureService) {
+    public RouteFinderImpl(RetrieveDeparturesService departureService) {
         this.departureService = departureService;
     }
 
@@ -59,7 +71,12 @@ public class RouteFinderImpl implements RouteFinder{
 
         // Submit the DFS task to the executor and get a Future object
         Future<?> future = executor.submit(() -> {
-            DFS(origin, destination, departureAt, maxStay, budget, paths, schengenOnly);
+//            DFS(origin, destination, departureAt, maxStay, budget, paths, schengenOnly);
+            List<List<DepartureInfo>> result = AStarAlgorithm(origin, destination, departureAt, maxStay, budget, schengenOnly);
+
+            synchronized (paths) {
+                paths.addAll(result);
+            }
         });
 
         try {
@@ -95,21 +112,21 @@ public class RouteFinderImpl implements RouteFinder{
     /**
      * Depth-First Search algorithm to explore possible paths within the given time limit and criteria.
      *
-     * @param source the starting airport
+     * @param origin the starting airport
      * @param destination the destination airport
      * @param departureAt the departure date
-     * @param dayRange the range of days to explore
+     * @param daysRange the range of days to explore
      * @param maxPrice the maximum price for the trip
      * @param paths the list to store found paths
      * @param schengenOnly if true, only includes flights within the Schengen Area
      */
-    private void DFS(String source, String destination, String departureAt, int dayRange, double maxPrice,
+    private void DFS(String origin, String destination, String departureAt, int daysRange, double maxPrice,
                      List<List<DepartureInfo>> paths, boolean schengenOnly) {
         // Stack to manage the nodes to visit
         Stack<Node> stack = new Stack<>();
         Set<String> visited = new HashSet<>();
         // Push the initial node onto the stack
-        stack.push(new Node(source, departureAt, 0, new ArrayList<>()));
+        stack.push(new Node(origin, departureAt, 0, new ArrayList<>()));
 
         // Continue searching while there are nodes to visit and the thread is not interrupted
         while (!stack.isEmpty() && !Thread.currentThread().isInterrupted()) {
@@ -124,17 +141,7 @@ public class RouteFinderImpl implements RouteFinder{
             visited.add(currentNodeKey);
 
             // List to store all departures within the given date range
-            List<DepartureInfo> allDepartures = new ArrayList<>();
-            LocalDate initialDate = LocalDate.parse(currentNode.date, DateTimeFormatter.ISO_LOCAL_DATE);
-            initialDate = initialDate.plusDays(1);
-            for (int i = 0; i < dayRange; i++) {
-                LocalDate dateToCheck = initialDate.plusDays(i);
-                // Retrieve departures for the current date
-                List<DepartureInfo> dailyDepartures = departureService.getDepartures(currentNode.airport, dateToCheck.toString(), schengenOnly);
-                if (dailyDepartures != null) {
-                    allDepartures.addAll(dailyDepartures);
-                }
-            }
+            List<DepartureInfo> allDepartures = departureService.retrieveDepartures(origin, departureAt, daysRange, schengenOnly);
             // Sort departures by price in descending order
             allDepartures.sort(Comparator.comparing(DepartureInfo::getPrice).reversed());
 
@@ -158,6 +165,59 @@ public class RouteFinderImpl implements RouteFinder{
         }
     }
 
+    private List<List<DepartureInfo>> AStarAlgorithm(String origin, String destination, String departureAt,
+                                                     int daysRange, double maxPrice, boolean schengenOnly){
+        List<List<DepartureInfo>> paths = new ArrayList<>();
+        PriorityQueue<Node> openSet = new PriorityQueue<>(Comparator.comparingDouble(Node::getHeuristic));
+        Set<String> visited = new HashSet<>();
+        Set<String> uniqueCities = new HashSet<>();
+        Map<String, Double> gScore = new HashMap<>();
+        gScore.put(origin + ":" + destination, 0.0);
+        openSet.add(new Node(origin, departureAt, 0, new ArrayList<>(), 0, 0));
+
+        while(!openSet.isEmpty() && !Thread.currentThread().isInterrupted()) {
+            Node currentNode = openSet.poll();
+            String currentNodeKey = currentNode.airport + ":" + currentNode.date;
+            if (visited.contains(currentNodeKey)) {
+                continue;
+            }
+            visited.add(currentNodeKey);
+            uniqueCities.add(currentNode.airport);
+
+            List<DepartureInfo> allDepartures = departureService.retrieveDepartures(origin, departureAt, daysRange, schengenOnly);
+
+            for (DepartureInfo departureInfo : allDepartures){
+                double newPrice = departureInfo.getPrice() + currentNode.price;
+                if (newPrice < maxPrice){
+                    List<DepartureInfo> newTrip = new ArrayList<>(currentNode.trip);
+                    newTrip.add(departureInfo);
+                    double currentHeuristic = calculateHeuristic(departureInfo, currentNode, uniqueCities);
+                    double newTotalHeuristic = currentHeuristic + currentNode.getTotalHeuristic();
+                    Node nextNode = new Node(departureInfo.getDestinationAirportCode(), departureInfo.getDepartureAt(),
+                            newPrice, newTrip, currentHeuristic, newTotalHeuristic);
+                    String nextNodeKey = nextNode.airport + ":" + nextNode.date;
+                    System.out.println("Explored node: " + nextNodeKey + " heuristic: " + currentHeuristic);
+                    if (newTotalHeuristic > gScore.getOrDefault(nextNodeKey, Double.MAX_VALUE)){
+                        gScore.put(nextNodeKey, newTotalHeuristic);
+                        openSet.add(nextNode);
+                    }
+                    if (departureInfo.getDestinationAirportCode().equals(destination) && newTrip.size() > 2){
+                        paths.add(newTrip);
+                    }
+                }
+            }
+
+        }
+        return paths;
+    }
+
+    private double calculateHeuristic(DepartureInfo departureInfo, Node newNode, Set<String> uniqueCities) {
+        double priceFactor = newNode.price + departureInfo.getPrice();
+        double uniqueCitiesFactor = uniqueCities.contains(newNode.airport) ? uniqueCitiesFactorWeight : 0;
+        double lengthFactor = uniqueCities.size();
+
+        return priceFactorWeight / priceFactor + uniqueCitiesFactor + lengthFactor * lengthFactorWeight;
+    }
     /**
      * Node class representing a step in the trip.
      */
@@ -166,12 +226,23 @@ public class RouteFinderImpl implements RouteFinder{
         String date;
         double price;
         List<DepartureInfo> trip;
+        double heuristic;
+        double totalHeuristic;
 
         Node(String airport, String date, double price, List<DepartureInfo> trip) {
             this.airport = airport;
             this.date = formatDate(date);
             this.price = price;
             this.trip = trip;
+        }
+
+        Node(String airport, String date, double price, List<DepartureInfo> trip, double heuristic, double totalHeuristic) {
+            this.airport = airport;
+            this.date = formatDate(date);
+            this.price = price;
+            this.trip = trip;
+            this.heuristic = heuristic;
+            this.totalHeuristic = totalHeuristic;
         }
 
         private String formatDate(String dateTime) {
@@ -183,6 +254,14 @@ public class RouteFinderImpl implements RouteFinder{
                 LocalDate localDate = LocalDate.parse(dateTime);
                 return localDate.toString();
             }
+        }
+
+        public double getHeuristic(){
+            return heuristic;
+        }
+
+        public double getTotalHeuristic(){
+            return totalHeuristic;
         }
     }
 }
