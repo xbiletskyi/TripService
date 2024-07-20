@@ -18,10 +18,16 @@ public class HeuristicCalculator {
     @Value("${RouteFinder.heuristic.lengthFactorWeight}")
     double lengthFactorWeight;
 
-    public double calculateHeuristic(DepartureInfo departureInfo, AlgorithmNode newNode) {
+    public double calculateHeuristic(
+            DepartureInfo departureInfo,
+            AlgorithmNode newNode
+    ) {
         double priceFactor = newNode.getPrice() + departureInfo.getPrice();
-        double uniqueCitiesFactor = newNode.getUniqueCities().contains(departureInfo.getDestinationAirportCode()) ? 0 : uniqueCitiesFactorWeight;
+        double uniqueCitiesFactor = newNode.getUniqueCities().contains(departureInfo.getDestinationAirportCode())
+                ? 0 : uniqueCitiesFactorWeight;
         double lengthFactor = newNode.getUniqueCities().size();
-        return (priceFactorWeight / priceFactor) + uniqueCitiesFactor + (lengthFactor * lengthFactorWeight);
+        return (priceFactorWeight / priceFactor)
+                + uniqueCitiesFactor
+                + (lengthFactor * lengthFactorWeight);
     }
 }

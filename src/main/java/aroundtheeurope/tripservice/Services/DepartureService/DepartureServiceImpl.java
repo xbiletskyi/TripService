@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -39,7 +40,10 @@ public class DepartureServiceImpl implements DepartureService {
      * @param objectMapper the ObjectMapper to serialize and deserialize objects
      */
     @Autowired
-    public DepartureServiceImpl(RestTemplate restTemplate, ObjectMapper objectMapper) {
+    public DepartureServiceImpl(
+            RestTemplate restTemplate,
+            ObjectMapper objectMapper
+    ) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
     }
@@ -53,11 +57,16 @@ public class DepartureServiceImpl implements DepartureService {
      * @return the list of DepartureInfo
      */
     @Override
-    public List<DepartureInfo> retrieveDepartures(String airportCode, String date, int daysRange, boolean schengenOnly){
+    public List<DepartureInfo> retrieveDepartures(
+            String airportCode,
+            LocalDate date,
+            int dayRange,
+            boolean schengenOnly
+    ){
         String url = takeFlightsUrl + "origin=" + airportCode
-                + "&departureAt=" + date
+                + "&departureAt=" + date.toString()
                 + "&schengenOnly=" + schengenOnly
-                + "&daysRange=" + daysRange;
+                + "&dayRange=" + dayRange;
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "application/json");
         String auth = authUsername + ":" + authPassword;

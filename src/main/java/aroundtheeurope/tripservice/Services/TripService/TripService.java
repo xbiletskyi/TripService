@@ -2,6 +2,7 @@ package aroundtheeurope.tripservice.Services.TripService;
 
 import aroundtheeurope.tripservice.Models.FoundTrip;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -21,11 +22,15 @@ public interface TripService {
      * @param schengenOnly if true, only includes flights within the Schengen Area
      * @return the list of found trips
      */
-    List<FoundTrip> findRoute(String origin,
-                              String destination,
-                              String departureAt,
-                              int maxStay,
-                              double budget,
-                              int timeLimit,
-                              boolean schengenOnly);
+    List<FoundTrip> findTrip(
+            String origin,
+            String destination,
+            LocalDateTime departureAt,
+            LocalDateTime returnBefore,
+            int maxStay,
+            int minStay,
+            double budget,
+            boolean schengenOnly,
+            int timeLimit
+    );
 }

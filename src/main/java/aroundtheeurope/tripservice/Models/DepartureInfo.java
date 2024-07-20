@@ -1,6 +1,8 @@
 package aroundtheeurope.tripservice.Models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.time.LocalDateTime;
+
 /**
  * Model class representing departure information.
  */
@@ -8,7 +10,7 @@ public class DepartureInfo {
     @JsonProperty("flightNumber")
     private String flightNumber;
     @JsonProperty("departureAt")
-    private String departureAt;
+    private LocalDateTime departureAt;
     @JsonProperty("originAirportName")
     private String originAirportName;
     @JsonProperty("originAirportCode")
@@ -41,7 +43,7 @@ public class DepartureInfo {
      * @param currencyCode          the ISO currency code
      */
     public DepartureInfo (String flightNumber,
-                          String departureAt,
+                          LocalDateTime departureAt,
                           String originAirportName,
                           String originAirportCode,
                           String originCountryCode,
@@ -95,11 +97,11 @@ public class DepartureInfo {
         this.flightNumber = flightNumber;
     }
 
-    public String getDepartureAt() {
+    public LocalDateTime getDepartureAt() {
         return departureAt;
     }
 
-    public void setDepartureAt(String departureAt) {
+    public void setDepartureAt(LocalDateTime departureAt) {
         this.departureAt = departureAt;
     }
 

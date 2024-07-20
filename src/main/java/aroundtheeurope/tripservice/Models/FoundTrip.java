@@ -36,13 +36,14 @@ public class FoundTrip {
      * @param arrivalAt       the arrival date and time
      * @param tripSchedule    the schedule of the trip
      */
-    public FoundTrip(double totalPrice,
-                     int totalFlights,
-                     int uniqueCities,
-                     int uniqueCountries,
-                     String departureAt,
-                     String arrivalAt,
-                     List<DepartureInfo> tripSchedule) {
+    public FoundTrip(
+            double totalPrice,
+            int totalFlights,
+            int uniqueCities,
+            int uniqueCountries,
+            String departureAt,
+            String arrivalAt,
+            List<DepartureInfo> tripSchedule) {
         this.totalPrice = totalPrice;
         this.totalFlights = totalFlights;
         this.uniqueCities = uniqueCities;
@@ -74,8 +75,8 @@ public class FoundTrip {
                 path.size(),
                 uniqueCities.size(),
                 uniqueCountries.size(),
-                path.getFirst().getDepartureAt(),
-                path.getLast().getDepartureAt(),
+                path.getFirst().getDepartureAt().toString(),
+                path.getLast().getDepartureAt().toString(),
                 path
         );
     }

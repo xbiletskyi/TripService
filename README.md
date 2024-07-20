@@ -28,15 +28,18 @@ The architecture design shows the interaction between the user, the Trip microse
 Constructs several feasible routes within the given criteria. Requires UI-significant amount of time.
 
 #### Parameters
-| Name            | Type    | Required | Default | Description                                               |
-|-----------------|---------|----------|---------|-----------------------------------------------------------|
-| `origin`        | String  | Yes      | None    | The IATA code of the departure airport                    |
-| `destination`   | String  | Yes      | None    | The IATA code of the destination airport                  |
-| `departureAt`   | String  | Yes      | None    | The date to start the trip in the format `yyyy-MM-dd`     |
-| `budget`        | double  | Yes      | None    | Maximum amount of money spent on trips                    |
-| `maxStay`       | int     | Yes      | None    | Maximum days between two flights                          |
-| `schengenOnly`  | boolean | No       | false   | If `true`, only includes flights within the Schengen Area |
-| `timeLimitSeconds` | int  | No       | 10      | Working time for an algorithm to find feasible trips      |
+| Name               | Type    | Required | Default    | Description                                                |
+|--------------------|---------|----------|------------|------------------------------------------------------------|
+| `origin`           | String  | Yes      | None       | The IATA code of the departure airport                     |
+| `destination`      | String  | No       | `origin`   | The IATA code of the destination airport                   |
+| `departureAt`      | String  | Yes      | None       | The date to start the trip in the format `yyyy-MM-dd`      |
+| `returnBefore`     | String  | No       | 3000-01-01 | The date to end the trip before in the format `yyyy-MM-dd` |
+| `budget`           | double  | Yes      | None       | Maximum amount of money spent on trips                     |
+| `maxStay`          | int     | No       | 1          | Maximum days between two flights                           |
+| `minStay`          | int     | No       | 1          | Minimum days between two flights                           |
+| `schengenOnly`     | boolean | No       | false      | If `true`, only includes flights within the Schengen Area  |
+| `timeLimitSeconds` | int     | No       | 10         | Working time for an algorithm to find feasible trips       |
+
 
 #### Responses
 - **200 OK**

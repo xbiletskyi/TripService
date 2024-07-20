@@ -1,10 +1,10 @@
-package aroundtheeurope.findroute;
+package aroundtheeurope.tripservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class FindRouteApplicationTests {
+class TripServiceApplicationTests {
 
     @Test
     void contextLoads() {

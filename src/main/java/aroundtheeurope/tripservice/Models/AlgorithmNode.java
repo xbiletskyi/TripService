@@ -9,13 +9,19 @@ import java.util.Set;
 
 public class AlgorithmNode {
     private String airport;
-    private String date;
+    private LocalDateTime date;
     private double price;
     private List<DepartureInfo> trip;
     private Set<String> uniqueCities;
     private double heuristic;
 
-    public AlgorithmNode(String airport, String date, double price, List<DepartureInfo> trip, double heuristic, Set<String> uniqueCities) {
+    public AlgorithmNode(
+            String airport,
+            LocalDateTime date,
+            double price,
+            List<DepartureInfo> trip,
+            double heuristic,
+            Set<String> uniqueCities) {
         this.airport = airport;
         this.date = date;
         this.price = price;
@@ -24,14 +30,23 @@ public class AlgorithmNode {
         this.uniqueCities = uniqueCities;
     }
 
-    public AlgorithmNode(String airport, String date, double price, List<DepartureInfo> trip) {
+    public AlgorithmNode(
+            String airport,
+            LocalDateTime date,
+            double price,
+            List<DepartureInfo> trip) {
         this.airport = airport;
         this.date = date;
         this.price = price;
         this.trip = trip;
     }
 
-    public static AlgorithmNode createNode(String airport, String date, double price, List<DepartureInfo> trip, double heuristic) {
+    public static AlgorithmNode createNode(
+            String airport,
+            String date,
+            double price,
+            List<DepartureInfo> trip,
+            double heuristic) {
         // Unique cities HashSet creation
         Set<String> uniqueCities = new HashSet<>();
         for (DepartureInfo departureInfo : trip) {
@@ -39,19 +54,16 @@ public class AlgorithmNode {
         }
 
         // Date formatting
-        String dateFormatted = "";
+        LocalDateTime localDateTime;
         try {
-            LocalDateTime localDateTime = LocalDateTime.parse(date);
-            LocalDate localDate = localDateTime.toLocalDate();
-            dateFormatted = localDate.toString();
+            localDateTime = LocalDateTime.parse(date);
         } catch (DateTimeParseException e) {
             LocalDate localDate = LocalDate.parse(date);
-            dateFormatted = localDate.toString();
+            localDateTime = localDate.atStartOfDay();
         }
 
-        return new AlgorithmNode(airport, dateFormatted, price, trip, heuristic, uniqueCities);
+        return new AlgorithmNode(airport, localDateTime, price, trip, heuristic, uniqueCities);
     }
-
 
     // Getters and setters
     public String getAirport() {
@@ -62,11 +74,11 @@ public class AlgorithmNode {
         this.airport = airport;
     }
 
-    public String getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 

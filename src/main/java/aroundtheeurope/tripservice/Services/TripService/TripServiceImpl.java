@@ -8,6 +8,7 @@ import aroundtheeurope.tripservice.Services.TripService.Heuristic.HeuristicAlgor
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -44,13 +45,17 @@ public class TripServiceImpl implements TripService {
      * @return the list of found trips
      */
     @Override
-    public List<FoundTrip> findRoute(String origin,
-                                     String destination,
-                                     String departureAt,
-                                     int maxStay,
-                                     double budget,
-                                     int timeLimit,
-                                     boolean schengenOnly) {
+    public List<FoundTrip> findTrip(
+            String origin,
+            String destination,
+            LocalDateTime departureAt,
+            LocalDateTime returnBefore,
+            int maxStay,
+            int minStay,
+            double budget,
+            boolean schengenOnly,
+            int timeLimit
+    ) {
 
         // List to store all possible paths found
         List<List<DepartureInfo>> paths = new ArrayList<>();
@@ -62,12 +67,32 @@ public class TripServiceImpl implements TripService {
         Future<?> future;
         if (timeLimit < 100){
             future = executor.submit(() -> {
-                aStarAlgorithm.findRoutes(origin, destination, departureAt, maxStay, budget, schengenOnly, paths);
+                dfs.findTrips(
+                        origin,
+                        destination,
+                        departureAt,
+                        returnBefore,
+                        maxStay,
+                        minStay,
+                        budget,
+                        schengenOnly,
+                        paths
+                );
             });
         }
         else {
             future = executor.submit(() -> {
-                dfs.findRoutes(origin, destination, departureAt, maxStay, budget, schengenOnly, paths);
+                aStarAlgorithm.findTrips(
+                        origin,
+                        destination,
+                        departureAt,
+                        returnBefore,
+                        maxStay,
+                        minStay,
+                        budget,
+                        schengenOnly,
+                        paths
+                );
             });
         }
 
