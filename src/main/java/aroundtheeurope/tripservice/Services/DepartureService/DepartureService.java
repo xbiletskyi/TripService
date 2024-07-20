@@ -1,13 +1,13 @@
-package aroundtheeurope.findroute.Services;
+package aroundtheeurope.tripservice.Services.DepartureService;
 
-import aroundtheeurope.findroute.Models.DepartureInfo;
+import aroundtheeurope.tripservice.Models.DepartureInfo;
 
 import java.util.List;
 
 /**
  * Interface for retrieving departure information.
  */
-public interface RetrieveDeparturesService {
+public interface DepartureService {
     /**
      * Retrieves departure information from the TakeFlights microservice on the given period of days.
      *

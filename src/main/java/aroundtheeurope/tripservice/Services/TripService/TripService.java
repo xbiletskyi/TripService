@@ -1,14 +1,13 @@
-package aroundtheeurope.findroute.Services;
+package aroundtheeurope.tripservice.Services.TripService;
 
-import aroundtheeurope.findroute.Models.DepartureInfo;
-import aroundtheeurope.findroute.Models.FoundTrip;
+import aroundtheeurope.tripservice.Models.FoundTrip;
 
 import java.util.List;
 
 /**
  * Interface for finding routes between airports.
  */
-public interface RouteFinder {
+public interface TripService {
 
     /**
      * Finds routes between airports within the given criteria.

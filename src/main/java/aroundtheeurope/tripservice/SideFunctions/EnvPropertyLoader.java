@@ -1,4 +1,4 @@
-package aroundtheeurope.findroute.SideFunctions;
+package aroundtheeurope.tripservice.SideFunctions;
 
 import io.github.cdimascio.dotenv.Dotenv;
 

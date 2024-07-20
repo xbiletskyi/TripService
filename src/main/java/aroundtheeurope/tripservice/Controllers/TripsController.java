@@ -1,7 +1,7 @@
-package aroundtheeurope.findroute.Controllers;
+package aroundtheeurope.tripservice.Controllers;
 
-import aroundtheeurope.findroute.Models.FoundTrip;
-import aroundtheeurope.findroute.Services.RouteFinder;
+import aroundtheeurope.tripservice.Models.FoundTrip;
+import aroundtheeurope.tripservice.Services.TripService.TripService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +15,9 @@ import java.util.List;
  * Controller class to handle requests for finding routes.
  */
 @RestController
-public class FindRouteController {
+public class TripsController {
     @Autowired
-    private final RouteFinder routeFinder;
+    private final TripService routeFinder;
 
     /**
      * Constructor for FindRouteController.
@@ -25,7 +25,7 @@ public class FindRouteController {
      * @param routeFinder the service used to find routes
      */
     @Autowired
-    public FindRouteController(RouteFinder routeFinder) {
+    public TripsController(TripService routeFinder) {
         this.routeFinder = routeFinder;
     }
 
@@ -41,7 +41,7 @@ public class FindRouteController {
      * @param timeLimit the time limit in seconds for finding routes
      * @return a ResponseEntity containing the list of found trips
      */
-    @GetMapping("/findroute")
+    @GetMapping("/v1/trips")
     public ResponseEntity<List<FoundTrip>> findRoute(@RequestParam("origin") String origin,
                                                      @RequestParam("destination") String destination,
                                                      @RequestParam("departureAt") String departureAt,

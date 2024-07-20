@@ -1,6 +1,6 @@
-package aroundtheeurope.findroute.Services;
+package aroundtheeurope.tripservice.Services.DepartureService;
 
-import aroundtheeurope.findroute.Models.DepartureInfo;
+import aroundtheeurope.tripservice.Models.DepartureInfo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import java.util.*;
  * Service implementation for retrieving departure information.
  */
 @Service
-public class RetrieveDeparturesServiceImpl implements RetrieveDeparturesService {
+public class DepartureServiceImpl implements DepartureService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
@@ -39,7 +39,7 @@ public class RetrieveDeparturesServiceImpl implements RetrieveDeparturesService 
      * @param objectMapper the ObjectMapper to serialize and deserialize objects
      */
     @Autowired
-    public RetrieveDeparturesServiceImpl(RestTemplate restTemplate, ObjectMapper objectMapper) {
+    public DepartureServiceImpl(RestTemplate restTemplate, ObjectMapper objectMapper) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
     }
@@ -67,13 +67,16 @@ public class RetrieveDeparturesServiceImpl implements RetrieveDeparturesService 
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-        List<DepartureInfo> departureInfos = null;
-        try{
-            departureInfos = objectMapper.readValue(response.getBody(), new TypeReference<>() {
-            });
-        }
-        catch (IOException e){
-            e.printStackTrace();
+        List<DepartureInfo> departureInfos = Collections.emptyList(); // Default to an empty list
+
+        if (response.getBody() != null) {
+            try {
+                departureInfos = objectMapper.readValue(response.getBody(), new TypeReference<List<DepartureInfo>>() {});
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.err.println("Response body is null for request to " + url);
         }
         return departureInfos;
     }

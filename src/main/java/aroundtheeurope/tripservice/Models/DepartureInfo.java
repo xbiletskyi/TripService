@@ -1,4 +1,4 @@
-package aroundtheeurope.findroute.Models;
+package aroundtheeurope.tripservice.Models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**

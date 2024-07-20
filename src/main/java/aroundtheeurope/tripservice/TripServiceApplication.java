@@ -1,6 +1,6 @@
-package aroundtheeurope.findroute;
+package aroundtheeurope.tripservice;
 
-import aroundtheeurope.findroute.SideFunctions.EnvPropertyLoader;
+import aroundtheeurope.tripservice.SideFunctions.EnvPropertyLoader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * The main entry point for the FindRoute Spring Boot application.
  */
 @SpringBootApplication
-public class FindRouteApplication {
+public class TripServiceApplication {
 
     // Static block to load environment properties before the application starts
     static {
@@ -21,7 +21,7 @@ public class FindRouteApplication {
      * @param args command-line arguments
      */
     public static void main(String[] args) {
-        SpringApplication.run(FindRouteApplication.class, args);
+        SpringApplication.run(TripServiceApplication.class, args);
     }
 
 }
