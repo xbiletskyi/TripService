@@ -57,7 +57,6 @@ public class DFS {
                 // Check if the new price is within the budget
                 LocalDateTime departureDate = departureInfo.getDepartureAt();
                 if (newPrice < maxPrice && departureDate.isBefore(returnBefore)) {
-                    System.out.println("Visited node: " + departureInfo);
                     // Create a new trip path and add the current departure to it
                     List<DepartureInfo> newTrip = new ArrayList<>(currentNode.getTrip());
                     newTrip.add(departureInfo);
@@ -66,7 +65,6 @@ public class DFS {
                     if (departureInfo.getDestinationAirportCode().equals(destination)
                             && currentNode.getTrip().size() > 2) {
                         paths.add(newTrip);
-                        System.out.println("\n\n\n\nFOUND TRIP\n\n\n");
                     }
                     // Push the next node onto the stack
                     stack.push(new AlgorithmNode(

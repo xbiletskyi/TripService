@@ -141,7 +141,7 @@ curl -X GET "http://localhost:60001/v1/trips?origin=BTS&destination=BTS&departur
           "originAirportCode": "NCL",
           "originCountryCode": "gb",
           "destinationAirportName": "Dublin",
-          "destinationAirportCode": "DUB",!
+          "destinationAirportCode": "DUB",
           "destinationCountryCode": "ie",
           "price": 14.99,
           "currencyCode": "GBP"
