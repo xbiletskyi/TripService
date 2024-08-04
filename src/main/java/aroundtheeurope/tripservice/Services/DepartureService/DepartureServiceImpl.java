@@ -26,13 +26,6 @@ public class DepartureServiceImpl implements DepartureService {
 
     @Value("${FlightService.url}")
     String takeFlightsUrl;
-
-    @Value("${spring.security.user.name}")
-    String authUsername;
-
-    @Value("${spring.security.user.password}")
-    String authPassword;
-
     /**
      * Constructor for DepartureServiceImpl.
      *
@@ -69,11 +62,6 @@ public class DepartureServiceImpl implements DepartureService {
                 + "&dayRange=" + dayRange;
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "application/json");
-        String auth = authUsername + ":" + authPassword;
-        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
-        String authHeader = "Basic " + encodedAuth;
-        headers.set("Authorization", authHeader);
-
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
         List<DepartureInfo> departureInfos = Collections.emptyList(); // Default to an empty list

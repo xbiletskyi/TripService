@@ -54,6 +54,7 @@ public class TripsController {
              @RequestParam(value = "schengenOnly", defaultValue = "false") boolean schengenOnly,
              @RequestParam(value = "timeLimitSeconds", defaultValue = "10") int timeLimit
             ) {
+        System.out.println("Received request: " + origin + " departure at: " + departureAt + " budget: " + budget);
         if (destination == null) {
             destination = origin;
         }
@@ -79,6 +80,7 @@ public class TripsController {
                     schengenOnly,
                     timeLimit
             );
+            System.out.println("Found trips: " + routes.size());
 
             // Return no content if no routes are found
             if (routes.isEmpty()) {

@@ -23,7 +23,7 @@ repositories {
     mavenCentral()
 }
 extra["springCloudVersion"] = "2023.0.1"
-extra["jacksonVersion"] = "2.15.2"
+extra["jacksonVersion"] = "2.17.0"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
@@ -40,8 +40,6 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-gateway-mvc")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-server")
     testImplementation("org.springframework.security:spring-security-test")
-    // Dotenv
-    implementation("io.github.cdimascio:dotenv-java:3.0.0")
     // Jackson
     implementation("com.fasterxml.jackson.core:jackson-databind:${property("jacksonVersion")}")
     implementation("com.fasterxml.jackson.core:jackson-core:${property("jacksonVersion")}")

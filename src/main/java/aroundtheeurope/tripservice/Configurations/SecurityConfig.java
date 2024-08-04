@@ -12,10 +12,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests.anyRequest().permitAll()  // Permit all requests without authentication
-                )
-                .csrf(AbstractHttpConfigurer::disable);  // Disable CSRF protection
+                        authorizeRequests
+                                .requestMatchers(request -> {
+                                    String remoteAddr = request.getRemoteAddr();
+                                    return "127.0.0.1".equals(remoteAddr) || "::1".equals(remoteAddr);
+                                }).permitAll()
+                                .anyRequest().denyAll()
+                );
         return http.build();
     }
 }
