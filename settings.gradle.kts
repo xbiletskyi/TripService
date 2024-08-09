@@ -1,1 +1,1 @@
-rootProject.name = "FindRoute"
+rootProject.name = "TripService"

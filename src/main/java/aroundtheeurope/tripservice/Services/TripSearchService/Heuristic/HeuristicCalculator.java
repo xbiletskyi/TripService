@@ -1,7 +1,7 @@
-package aroundtheeurope.tripservice.Services.TripService.Heuristic;
+package aroundtheeurope.tripservice.Services.TripSearchService.Heuristic;
 
-import aroundtheeurope.tripservice.Models.DepartureInfo;
-import aroundtheeurope.tripservice.Models.AlgorithmNode;
+import aroundtheeurope.tripservice.model.dto.DepartureInfo;
+import aroundtheeurope.tripservice.model.AlgorithmNode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

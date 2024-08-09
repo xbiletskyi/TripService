@@ -40,6 +40,7 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-gateway-mvc")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-server")
     testImplementation("org.springframework.security:spring-security-test")
+    runtimeOnly("org.postgresql:postgresql")
     // Jackson
     implementation("com.fasterxml.jackson.core:jackson-databind:${property("jacksonVersion")}")
     implementation("com.fasterxml.jackson.core:jackson-core:${property("jacksonVersion")}")

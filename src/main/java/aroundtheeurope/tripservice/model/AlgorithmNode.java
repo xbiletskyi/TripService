@@ -1,4 +1,6 @@
-package aroundtheeurope.tripservice.Models;
+package aroundtheeurope.tripservice.model;
+
+import aroundtheeurope.tripservice.model.dto.DepartureInfo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

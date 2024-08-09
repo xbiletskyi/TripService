@@ -1,6 +1,6 @@
 package aroundtheeurope.tripservice.Services.DepartureService;
 
-import aroundtheeurope.tripservice.Models.DepartureInfo;
+import aroundtheeurope.tripservice.model.dto.DepartureInfo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;

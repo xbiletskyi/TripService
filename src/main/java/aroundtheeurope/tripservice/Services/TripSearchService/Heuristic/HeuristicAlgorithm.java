@@ -1,8 +1,10 @@
-package aroundtheeurope.tripservice.Services.TripService.Heuristic;
+package aroundtheeurope.tripservice.Services.TripSearchService.Heuristic;
 
-import aroundtheeurope.tripservice.Models.DepartureInfo;
-import aroundtheeurope.tripservice.Models.AlgorithmNode;
+import aroundtheeurope.tripservice.Services.TripSearchService.TripFindingStrategy;
+import aroundtheeurope.tripservice.model.dto.DepartureInfo;
+import aroundtheeurope.tripservice.model.AlgorithmNode;
 import aroundtheeurope.tripservice.Services.DepartureService.DepartureService;
+import aroundtheeurope.tripservice.model.dto.TripRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
-public class HeuristicAlgorithm {
+public class HeuristicAlgorithm implements TripFindingStrategy {
 
     private final DepartureService departureService;
     private final HeuristicCalculator heuristicCalculator;
@@ -24,15 +26,8 @@ public class HeuristicAlgorithm {
         this.heuristicCalculator = heuristicCalculator;
     }
 
-    public List<List<DepartureInfo>> findTrips(
-            String origin,
-            String destination,
-            LocalDateTime departureAt,
-            LocalDateTime returnBefore,
-            int maxStay,
-            int minStay,
-            double maxPrice,
-            boolean schengenOnly,
+    public void findTrips(
+            TripRequest tripRequest,
             List<List<DepartureInfo>> paths
     ) {
         PriorityQueue<AlgorithmNode> openSet = new PriorityQueue<>(
@@ -40,8 +35,8 @@ public class HeuristicAlgorithm {
         );
         Set<String> uniqueCities = new HashSet<>();
         openSet.add(AlgorithmNode.createNode(
-                origin,
-                departureAt.toString(),
+                tripRequest.getOrigin(),
+                tripRequest.getDepartureAt().toString(),
                 0,
                 new ArrayList<>(),
                 0
@@ -51,23 +46,29 @@ public class HeuristicAlgorithm {
             AlgorithmNode currentNode = openSet.poll();
             uniqueCities.add(currentNode.getAirport());
 
-            LocalDateTime currentDate = currentNode.getDate().plusDays(minStay);
-            int dayRange = maxStay - minStay + 1;
+            LocalDateTime currentDate = currentNode.getDate().plusDays(tripRequest.getMinStay());
+            int dayRange = tripRequest.getMaxStay() - tripRequest.getMinStay() + 1;
             List<DepartureInfo> allDepartures = departureService.retrieveDepartures(
                     currentNode.getAirport(),
                     currentDate.toLocalDate(),
                     dayRange,
-                    schengenOnly
+                    tripRequest.isSchengenOnly()
             );
 
             for (DepartureInfo departureInfo : allDepartures) {
                 double newPrice = departureInfo.getPrice() + currentNode.getPrice();
                 LocalDateTime departureDate = departureInfo.getDepartureAt();
-                if (newPrice < maxPrice && departureDate.isBefore(returnBefore)) {
+                if (
+                        newPrice < tripRequest.getBudget()
+                        && departureDate.isBefore(tripRequest.getReturnBefore())
+                        && tripRequest.getExcludedAirports().stream().noneMatch(
+                            airport -> airport.equals(departureInfo.getDestinationAirportCode())
+                        )
+                ) {
                     List<DepartureInfo> newTrip = new ArrayList<>(currentNode.getTrip());
                     newTrip.add(departureInfo);
 
-                    if (departureInfo.getDestinationAirportCode().equals(destination) && newTrip.size() > 2) {
+                    if (departureInfo.getDestinationAirportCode().equals(tripRequest.getDestination()) && newTrip.size() > 2) {
                         paths.add(newTrip);
                         System.out.println("Path FOUND");
                     }
@@ -84,6 +85,5 @@ public class HeuristicAlgorithm {
                 }
             }
         }
-        return paths;
     }
 }
