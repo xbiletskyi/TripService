@@ -1,4 +1,4 @@
-package aroundtheeurope.tripservice.Controllers;
+package aroundtheeurope.tripservice.controller;
 
 import aroundtheeurope.tripservice.Services.TripRetrieveService.ITripRetrieveService;
 import aroundtheeurope.tripservice.Services.TripSearchService.ITripSearchService;

@@ -1,13 +1,12 @@
 package aroundtheeurope.tripservice.Services.TripRetrieveService;
 
-import aroundtheeurope.tripservice.Repositories.FoundTripRepository;
+import aroundtheeurope.tripservice.repository.FoundTripRepository;
 import aroundtheeurope.tripservice.model.dto.FoundTrip;
 import aroundtheeurope.tripservice.model.dto.FoundTripPreview;
 import aroundtheeurope.tripservice.model.entity.FoundTripEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 

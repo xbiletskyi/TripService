@@ -1,15 +1,13 @@
-package aroundtheeurope.tripservice.Repositories;
+package aroundtheeurope.tripservice.repository;
 
 import aroundtheeurope.tripservice.model.dto.FoundTripPreview;
 import aroundtheeurope.tripservice.model.entity.FoundTripEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.UUID;
 
-@Repository
 public interface FoundTripRepository extends JpaRepository<FoundTripEntity, UUID> {
     @Query(value = """
     SELECT  f.total_price AS totalPrice,

@@ -103,11 +103,11 @@ public class FoundTrip {
         this.arrivalAt = arrivalAt;
     }
 
-    public List<FlightInfoEntity> getTripSchedule() {
+    public List<DepartureInfo> getTripSchedule() {
         return tripSchedule;
     }
 
-    public void setTripSchedule(List<FlightInfoEntity> tripSchedule) {
+    public void setTripSchedule(List<DepartureInfo> tripSchedule) {
         this.tripSchedule = tripSchedule;
     }
 }

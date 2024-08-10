@@ -1,7 +1,7 @@
 package aroundtheeurope.tripservice.Services.TripSearchService;
 
-import aroundtheeurope.tripservice.Repositories.FoundTripRepository;
-import aroundtheeurope.tripservice.Repositories.TripRequestRepository;
+import aroundtheeurope.tripservice.repository.FoundTripRepository;
+import aroundtheeurope.tripservice.repository.TripRequestRepository;
 import aroundtheeurope.tripservice.model.dto.DepartureInfo;
 import aroundtheeurope.tripservice.model.entity.FoundTripEntity;
 

@@ -1,4 +1,4 @@
-package aroundtheeurope.tripservice.Repositories;
+package aroundtheeurope.tripservice.repository;
 
 import aroundtheeurope.tripservice.model.entity.TripRequestEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
