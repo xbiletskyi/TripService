@@ -3,6 +3,7 @@ package aroundtheeurope.tripservice.model.entity;
 import aroundtheeurope.tripservice.model.dto.DepartureInfo;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -42,6 +43,9 @@ public class FlightInfoEntity {
 
     @Column(name = "currency_code")
     private String currencyCode;
+
+    @ManyToMany(mappedBy = "tripSchedule")
+    private Set<FoundTripEntity> foundTrips;
 
     public FlightInfoEntity() {
     }

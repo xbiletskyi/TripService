@@ -3,6 +3,7 @@ package aroundtheeurope.tripservice.model.entity;
 import aroundtheeurope.tripservice.model.dto.DepartureInfo;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -26,10 +27,10 @@ public class FoundTripEntity {
     private int uniqueCountries;
 
     @Column(name = "departure_at")
-    private String departureAt;
+    private LocalDateTime departureAt;
 
     @Column(name = "arrival_at")
-    private String arrivalAt;
+    private LocalDateTime arrivalAt;
 
     @Column(name = "user_id")
     private UUID userId;
@@ -37,8 +38,12 @@ public class FoundTripEntity {
     @Column(name = "request_id")
     private UUID requestId;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "found_trip_id")
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "found_trip_schedule",
+            joinColumns = @JoinColumn(name = "found_trip_id"),
+            inverseJoinColumns = @JoinColumn(name = "departure_info_id")
+    )
     private List<FlightInfoEntity> tripSchedule;
 
     public FoundTripEntity() {
@@ -49,8 +54,8 @@ public class FoundTripEntity {
             int totalFlights,
             int uniqueCities,
             int uniqueCountries,
-            String departureAt,
-            String arrivalAt,
+            LocalDateTime departureAt,
+            LocalDateTime arrivalAt,
             UUID userId,
             UUID requestId,
             List<FlightInfoEntity> tripSchedule) {
@@ -87,8 +92,8 @@ public class FoundTripEntity {
                 path.size(),
                 uniqueCities.size(),
                 uniqueCountries.size(),
-                path.getFirst().getDepartureAt().toString(),
-                path.getLast().getDepartureAt().toString(),
+                path.getFirst().getDepartureAt(),
+                path.getLast().getDepartureAt(),
                 userId,
                 requestId,
                 tripSchedule
@@ -136,19 +141,19 @@ public class FoundTripEntity {
         this.uniqueCountries = uniqueCountries;
     }
 
-    public String getDepartureAt() {
+    public LocalDateTime getDepartureAt() {
         return departureAt;
     }
 
-    public void setDepartureAt(String departureAt) {
+    public void setDepartureAt(LocalDateTime departureAt) {
         this.departureAt = departureAt;
     }
 
-    public String getArrivalAt() {
+    public LocalDateTime getArrivalAt() {
         return arrivalAt;
     }
 
-    public void setArrivalAt(String arrivalAt) {
+    public void setArrivalAt(LocalDateTime arrivalAt) {
         this.arrivalAt = arrivalAt;
     }
 

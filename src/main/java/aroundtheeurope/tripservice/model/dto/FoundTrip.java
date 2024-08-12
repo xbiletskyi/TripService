@@ -3,6 +3,7 @@ package aroundtheeurope.tripservice.model.dto;
 import aroundtheeurope.tripservice.model.entity.FlightInfoEntity;
 import aroundtheeurope.tripservice.model.entity.FoundTripEntity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -13,8 +14,8 @@ public class FoundTrip {
     private int totalFlights;
     private int uniqueCities;
     private int uniqueCountries;
-    private String departureAt;
-    private String arrivalAt;
+    private LocalDateTime departureAt;
+    private LocalDateTime arrivalAt;
     private List<DepartureInfo> tripSchedule;
 
     public FoundTrip() {}
@@ -24,8 +25,8 @@ public class FoundTrip {
             int totalFlights,
             int uniqueCities,
             int uniqueCountries,
-            String departureAt,
-            String arrivalAt,
+            LocalDateTime departureAt,
+            LocalDateTime arrivalAt,
             List<DepartureInfo> tripSchedule
     ) {
         this.totalPrice = totalPrice;
@@ -87,19 +88,19 @@ public class FoundTrip {
         this.uniqueCountries = uniqueCountries;
     }
 
-    public String getDepartureAt() {
+    public LocalDateTime getDepartureAt() {
         return departureAt;
     }
 
-    public void setDepartureAt(String departureAt) {
+    public void setDepartureAt(LocalDateTime departureAt) {
         this.departureAt = departureAt;
     }
 
-    public String getArrivalAt() {
+    public LocalDateTime getArrivalAt() {
         return arrivalAt;
     }
 
-    public void setArrivalAt(String arrivalAt) {
+    public void setArrivalAt(LocalDateTime arrivalAt) {
         this.arrivalAt = arrivalAt;
     }
 

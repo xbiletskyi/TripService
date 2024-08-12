@@ -1,6 +1,7 @@
 package aroundtheeurope.tripservice.model.dto;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,7 +16,7 @@ public class TripRequest {
     private int minStay;
     private boolean schengenOnly;
     private int timeLimitSeconds;
-    private List<String> excludedAirports;
+    private List<String> excludedAirports = new ArrayList<>();
 
 
     // Getters and setters

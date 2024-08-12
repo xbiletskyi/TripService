@@ -17,18 +17,18 @@ import java.util.UUID;
  * Controller class to handle requests for finding routes.
  */
 @RestController
-@RequestMapping("/v1/trips")
+@RequestMapping("/api/v1/trips")
 public class TripsController {
 
-    private final ITripSearchService tripService;
+    private final ITripSearchService tripSearchService;
     private final ITripRetrieveService tripRetrieveService;
 
     @Autowired
     public TripsController(
-            ITripSearchService tripService,
+            ITripSearchService tripSearchService,
             ITripRetrieveService tripRetrieveService
             ) {
-        this.tripService = tripService;
+        this.tripSearchService = tripSearchService;
         this.tripRetrieveService = tripRetrieveService;
     }
 
@@ -36,7 +36,7 @@ public class TripsController {
     @PostMapping
     public ResponseEntity<String> findTrips(@RequestBody TripRequest tripRequest) {
         try {
-            return tripService.findTrip(tripRequest);
+            return tripSearchService.findTrip(tripRequest);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);

@@ -1,12 +1,14 @@
 package aroundtheeurope.tripservice.model.dto;
 
+import java.time.LocalDateTime;
+
 public class FoundTripPreview {
     private double totalPrice;
     private int totalFlights;
     private int uniqueCities;
     private int uniqueCountries;
-    private String departureAt;
-    private String arrivalAt;
+    private LocalDateTime departureAt;
+    private LocalDateTime arrivalAt;
 
     public FoundTripPreview() {}
 
@@ -15,8 +17,8 @@ public class FoundTripPreview {
             int totalFlights,
             int uniqueCities,
             int uniqueCountries,
-            String departureAt,
-            String arrivalAt
+            LocalDateTime departureAt,
+            LocalDateTime arrivalAt
     ) {
         this.totalPrice = totalPrice;
         this.totalFlights = totalFlights;
@@ -61,19 +63,19 @@ public class FoundTripPreview {
         this.uniqueCountries = uniqueCountries;
     }
 
-    public String getDepartureAt() {
+    public LocalDateTime getDepartureAt() {
         return departureAt;
     }
 
-    public void setDepartureAt(String departureAt) {
+    public void setDepartureAt(LocalDateTime departureAt) {
         this.departureAt = departureAt;
     }
 
-    public String getArrivalAt() {
+    public LocalDateTime getArrivalAt() {
         return arrivalAt;
     }
 
-    public void setArrivalAt(String arrivalAt) {
+    public void setArrivalAt(LocalDateTime arrivalAt) {
         this.arrivalAt = arrivalAt;
     }
 }

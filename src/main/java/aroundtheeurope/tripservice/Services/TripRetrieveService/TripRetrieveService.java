@@ -22,7 +22,8 @@ public class TripRetrieveService implements ITripRetrieveService {
 
     @Override
     public List<FoundTripPreview> retrievePreview(UUID userId){
-        return foundTripRepository.findTripPreviewByUserId(userId);
+        List<FoundTripPreview> list = foundTripRepository.findTripPreviewByUserId(userId);
+        return list;
     }
 
     @Override
