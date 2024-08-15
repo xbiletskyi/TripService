@@ -11,18 +11,21 @@ The microservice looks for all feasible routes which satisfy the given parameter
 - Java
 - Spring Boot
 - Gradle
+- PostgreSQL
 
 ## Architecture Design
 ![Architecture design](./images/TripService.jpg)
 
 ### Description
-The architecture design shows the interaction between the user, the Trip microservice, and other components like the Trip Service and the Departure Service. The Trip Service utilizes modified DFS algorithm or Heuristic traversal algorithm depending on search time to find feasible paths, and the Departure Service retrieves flight data from the Departure microservice.
+The architecture design shows the interaction between the API Gateway and the internal service's components.
+The Trip Search Service utilizes modified DFS algorithm or Heuristic traversal algorithm depending on search time to 
+find feasible paths, and the Departure Service retrieves flight data from the Flight microservice.
 
 ## Endpoints
 
-### Get Trips
+### Send request
 #### URL
-`GET /v1/trips`
+`POST /api/v1/trips`
 
 #### Description
 Constructs several feasible routes within the given criteria. Requires UI-significant amount of time.
@@ -39,40 +42,12 @@ Constructs several feasible routes within the given criteria. Requires UI-signif
 | `minStay`          | int     | No       | 1          | Minimum days between two flights                           |
 | `schengenOnly`     | boolean | No       | false      | If `true`, only includes flights within the Schengen Area  |
 | `timeLimitSeconds` | int     | No       | 10         | Working time for an algorithm to find feasible trips       |
-
+| `excludedAirports` | Array<String> | No | None       | Airports to avoid during search                            |
 
 #### Responses
 - **200 OK**
     - **Description**: Successfully found at least one feasible path.
-    - **Body**:
-        ```json
-        [
-          {
-            "totalPrice": "double",
-            "totalFlights": "int",
-            "uniqueCities": "int",
-            "uniqueCountries": "int",
-            "departureAt": "ISO 8601 date-time",
-            "arrivalAt": "ISO 8601 date-time",
-            "tripSchedule": [
-              {
-                "flightNumber": "string (IATA airline designator followed by numeric identifier)",
-                "departureAt": "ISO 8601 date-time",
-                "originAirportName": "String",
-                "originAirportCode": "IATA code",
-                "originCountryCode": "ISO 3166 country code",
-                "destinationAirportName": "String",
-                "destinationAirportCode": "IATA code",
-                "destinationCountryCode": "ISO 3166 country code",
-                "price": "double",
-                "currencyCode": "ISO 4217 currency code"
-              }
-              ...
-            ]
-          }
-          ...
-        ]
-        ```
+    - **Body**: `null`
 - **204 No Content**
     - **Description**: No feasible routes found.
     - **Body**: `null`
@@ -84,175 +59,226 @@ Constructs several feasible routes within the given criteria. Requires UI-signif
     - **Body**: `null`
 #### Example request
 ```bash
-curl -X GET "http://localhost:60001/v1/trips?origin=BTS&destination=BTS&departureAt=2024-07-28&budget=200&maxStay=2&continue"
+curl -X POST http://localhost:60001/api/v1/trips \
+-H "Content-Type: application/json" \
+-d '{
+    "origin": "BGY",
+    "departureAt": "2024-10-10",
+    "budget": 300,
+    "timeLimitSeconds": 100,
+    "schengenOnly": "true",
+    "userId": "<UUID>"
+}'
 ```
+
+### Get preview
+#### URL
+`GET /api/v1/trips/preview`
+
+#### Description
+Retrieves general information about all found trips for user
+
+#### Parameters
+| Name               | Type    | Required | Default    | Description                                                |
+|--------------------|---------|----------|------------|------------------------------------------------------------|
+| `userId`           | UUID    | No       | None       | Specific user to return all related search results         |
+
+#### Responses
+- **200 OK**
+  - **Description**: Found at least one result
+- **Body**:
+  ```json
+  [
+    {
+      "totalPrice": "double",
+      "totalFlights": "int",
+      "uniqueCities": "int",
+      "uniqueCountries": "int",
+      "departureAt": "ISO 8601 date-time",
+      "arrivalAt": "ISO 8601 date-time",
+      "requestId": "UUID"
+    },
+    ...
+  ]
+  ```
+  
+- **204 No Content**
+  - **Description**: No results found for the specified request/user
+  - **Body**: `null`
+- **500 Internal Server Error**
+  - **Description**: Data retrieval error
+  - **Body**: `null`
+
+#### Example request
+```bash
+curl -X GET "http://localhost:60001/api/v1/trips/preview?userId=<UUID>"
+```
+
+#### Example successful response
+```json
+[
+    {
+        "totalPrice": 75.96,
+        "totalFlights": 4,
+        "uniqueCities": 3,
+        "uniqueCountries": 2,
+        "departureAt": "2024-11-11T06:00:00",
+        "arrivalAt": "2024-11-14T08:15:00",
+        "requestId": "d5faa357-eb00-456d-afd8-37e0ec4f1fa7"
+    },
+    {
+        "totalPrice": 134.8,
+        "totalFlights": 6,
+        "uniqueCities": 4,
+        "uniqueCountries": 3,
+        "departureAt": "2024-11-11T06:00:00",
+        "arrivalAt": "2024-11-16T13:50:00",
+        "requestId": "d5faa357-eb00-456d-afd8-37e0ec4f1fa7"
+    },
+    ...
+]
+```
+
+### Get results
+#### URL
+`GET /api/v1/trips`
+
+#### Description
+Retrieve the whole results information for user or specific request
+
+#### Parameters
+| Name               | Type    | Required | Default    | Description                                                |
+|--------------------|---------|----------|------------|------------------------------------------------------------|
+| `userId`           | UUID    | No       | None       | Specific user to return all related search results         |
+| `requestId`        | UUID    | No       | None       | Specific request to return the results                     |
+*Note: either userId or requestId must be provided*
+
+#### Responses
+- **200 OK**
+  - **Description**: Found at least one result
+  - **Body**:
+  ```json
+  [
+    {
+      "totalPrice": "double",
+      "totalFlights": "int",
+      "uniqueCities": "int",
+      "uniqueCountries": "int",
+      "departureAt": "ISO 8601 date-time",
+      "arrivalAt": "ISO 8601 date-time",
+      "requestId": "UUID",
+      "tripSchedule": [
+        {
+          "flightNumber": "string (IATA airline designator followed by numeric identifier)",
+          "departureAt": "ISO 8601 date-time",
+          "originAirportName": "String",
+          "originAirportCode": "IATA code",
+          "originCountryCode": "ISO 3166 country code",
+          "destinationAirportName": "String",
+          "destinationAirportCode": "IATA code",
+          "destinationCountryCode": "ISO 3166 country code",
+          "price": "double",
+          "currencyCode": "ISO 4217 currency code"
+        },
+        ...
+      ]
+    },
+    ...
+  ]
+  ```
+- **204 No Content**:
+  - **Description**: No data found for the given parameters
+  - **Body**: `null`
+- **400 Bad Request**
+  - **Description**: Parameters are absent or in bad format
+  - **Body**: `null`
+- **500 Internal Server Error**
+  - **Description**: Data retrieval error
+  - **Body**: `null`
+
+#### Example request
+```bash
+curl -X GET http://localhost:60001/api/v1/trips?userId=628baaa4-4052-4a07-bd2e-badce6fa9b40
+```
+
 #### Example successful response
 ```json
 [
   {
-    "totalPrice": 199.09,
-    "totalFlights": 11,
-    "uniqueCities": 9,
-    "uniqueCountries": 5,
-    "departureAt": "2024-07-30T09:45:00",
-    "arrivalAt": "2024-08-15T23:00:00",
-    "tripSchedule": {
-      "tripSchedule": [
-        {
-          "flightNumber": "FR5042",
-          "departureAt": "2024-07-30T09:45:00",
-          "originAirportName": "Bratislava",
-          "originAirportCode": "BTS",
-          "originCountryCode": "sk",
-          "destinationAirportName": "Leeds Bradford",
-          "destinationAirportCode": "LBA",
-          "destinationCountryCode": "gb",
-          "price": 14.99,
-          "currencyCode": "EUR"
-        },
-        {
-          "flightNumber": "FR157",
-          "departureAt": "2024-08-01T07:50:00",
-          "originAirportName": "Leeds Bradford",
-          "originAirportCode": "LBA",
-          "originCountryCode": "gb",
-          "destinationAirportName": "Dublin",
-          "destinationAirportCode": "DUB",
-          "destinationCountryCode": "ie",
-          "price": 14.99,
-          "currencyCode": "GBP"
-        },
-        {
-          "flightNumber": "FR16",
-          "departureAt": "2024-08-03T05:45:00",
-          "originAirportName": "Dublin",
-          "originAirportCode": "DUB",
-          "originCountryCode": "ie",
-          "destinationAirportName": "Newcastle",
-          "destinationAirportCode": "NCL",
-          "destinationCountryCode": "gb",
-          "price": 14.99,
-          "currencyCode": "EUR"
-        },
-        {
-          "flightNumber": "FR21",
-          "departureAt": "2024-08-04T19:00:00",
-          "originAirportName": "Newcastle",
-          "originAirportCode": "NCL",
-          "originCountryCode": "gb",
-          "destinationAirportName": "Dublin",
-          "destinationAirportCode": "DUB",
-          "destinationCountryCode": "ie",
-          "price": 14.99,
-          "currencyCode": "GBP"
-        },
-        {
-          "flightNumber": "FR1860",
-          "departureAt": "2024-08-06T20:25:00",
-          "originAirportName": "Dublin",
-          "originAirportCode": "DUB",
-          "originCountryCode": "ie",
-          "destinationAirportName": "Paris Beauvais",
-          "destinationAirportCode": "BVA",
-          "destinationCountryCode": "fr",
-          "price": 14.99,
-          "currencyCode": "EUR"
-        },
-        {
-          "flightNumber": "FR8883",
-          "departureAt": "2024-08-08T17:15:00",
-          "originAirportName": "Paris Beauvais",
-          "originAirportCode": "BVA",
-          "originCountryCode": "fr",
-          "destinationAirportName": "Milan Malpensa",
-          "destinationAirportCode": "MXP",
-          "destinationCountryCode": "it",
-          "price": 14.99,
-          "currencyCode": "EUR"
-        },
-        {
-          "flightNumber": "FR8884",
-          "departureAt": "2024-08-09T19:15:00",
-          "originAirportName": "Milan Malpensa",
-          "originAirportCode": "MXP",
-          "originCountryCode": "it",
-          "destinationAirportName": "Paris Beauvais",
-          "destinationAirportCode": "BVA",
-          "destinationCountryCode": "fr",
-          "price": 26.1,
-          "currencyCode": "EUR"
-        },
-        {
-          "flightNumber": "FR2895",
-          "departureAt": "2024-08-10T07:10:00",
-          "originAirportName": "Paris Beauvais",
-          "originAirportCode": "BVA",
-          "originCountryCode": "fr",
-          "destinationAirportName": "Turin",
-          "destinationAirportCode": "TRN",
-          "destinationCountryCode": "it",
-          "price": 14.99,
-          "currencyCode": "EUR"
-        },
-        {
-          "flightNumber": "FR873",
-          "departureAt": "2024-08-12T19:25:00",
-          "originAirportName": "Turin",
-          "originAirportCode": "TRN",
-          "originCountryCode": "it",
-          "destinationAirportName": "Naples",
-          "destinationAirportCode": "NAP",
-          "destinationCountryCode": "it",
-          "price": 29.99,
-          "currencyCode": "EUR"
-        },
-        {
-          "flightNumber": "FR3562",
-          "departureAt": "2024-08-13T11:50:00",
-          "originAirportName": "Naples",
-          "originAirportCode": "NAP",
-          "originCountryCode": "it",
-          "destinationAirportName": "Milan Bergamo",
-          "destinationAirportCode": "BGY",
-          "destinationCountryCode": "it",
-          "price": 20.41,
-          "currencyCode": "EUR"
-        },
-        {
-          "flightNumber": "FR4642",
-          "departureAt": "2024-08-15T23:00:00",
-          "originAirportName": "Milan Bergamo",
-          "originAirportCode": "BGY",
-          "originCountryCode": "it",
-          "destinationAirportName": "Bratislava",
-          "destinationAirportCode": "BTS",
-          "destinationCountryCode": "sk",
-          "price": 17.66,
-          "currencyCode": "EUR"
-        }
-      ]
-    }
-  }
-] 
+    "totalPrice": 171.96,
+    "totalFlights": 3,
+    "uniqueCities": 3,
+    "uniqueCountries": 3,
+    "departureAt": "2024-09-11T05:55:00",
+    "arrivalAt": "2024-09-13T12:05:00",
+    "requestId": "61ac0848-f96c-4b23-acaf-b0d87e664a0d",
+    "tripSchedule": [
+      {
+        "flightNumber": "FR1055",
+        "departureAt": "2024-09-12T15:10:00",
+        "originAirportName": "Brussels Charleroi",
+        "originAirportCode": "CRL",
+        "originCountryCode": "be",
+        "destinationAirportName": "Warsaw Modlin",
+        "destinationAirportCode": "WMI",
+        "destinationCountryCode": "pl",
+        "price": 14.99,
+        "currencyCode": "EUR"
+      },
+      {
+        "flightNumber": "FR87",
+        "departureAt": "2024-09-11T05:55:00",
+        "originAirportName": "Vienna",
+        "originAirportCode": "VIE",
+        "originCountryCode": "at",
+        "destinationAirportName": "Brussels Charleroi",
+        "destinationAirportCode": "CRL",
+        "destinationCountryCode": "be",
+        "price": 14.99,
+        "currencyCode": "EUR"
+      },
+      ...
+    ]
+  },
+  ...
+]
 ```
-## How to run
-### Prerequisites 
-- Java 21
-- Gradle
-- Docker
-### Run script
-```bash
-#!/bin/bash
-# Clone the repository
-git clone https://github.com/xbiletskyi/TripService
-cd TripService
 
-# Build the Docker image
-docker build -t tripservice:latest .
+[//]: # (## How to run)
 
-# Run the FindRoute container
-docker run -d -p 60001:8080 --name tripservice tripservice:latest
+[//]: # (### Prerequisites )
 
-# Display running containers
-docker ps
-```
+[//]: # (- Java 21)
+
+[//]: # (- Gradle)
+
+[//]: # (- Docker)
+
+[//]: # (### Run script)
+
+[//]: # (```bash)
+
+[//]: # (#!/bin/bash)
+
+[//]: # (# Clone the repository)
+
+[//]: # (git clone https://github.com/xbiletskyi/TripService)
+
+[//]: # (cd TripService)
+
+[//]: # ()
+[//]: # (# Build the Docker image)
+
+[//]: # (docker build -t tripservice:latest .)
+
+[//]: # ()
+[//]: # (# Run the FindRoute container)
+
+[//]: # (docker run -d -p 60001:8080 --name tripservice tripservice:latest)
+
+[//]: # ()
+[//]: # (# Display running containers)
+
+[//]: # (docker ps)
+
+[//]: # (```)

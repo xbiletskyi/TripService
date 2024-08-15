@@ -6,17 +6,20 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * Interface for retrieving departure information.
+ * Interface for retrieving departure information from a flight data service.
+ * Implementations of this interface are responsible for fetching departure data
+ * from the FlightService by provided parameters
  */
 public interface DepartureService {
+
     /**
-     * Retrieves departure information from the TakeFlights microservice on the given period of days.
+     * Retrieves departure information from the TakeFlights microservice for a specified airport, date, and date range.
      *
      * @param airportCode the IATA code of the airport
-     * @param date the date of departure
-     * @param daysRange number of days in date range
+     * @param date the starting date of the departure search
+     * @param daysRange the number of days to search departures from the start date
      * @param schengenOnly if true, only includes flights within the Schengen Area
-     * @return the list of DepartureInfo
+     * @return a list of DepartureInfo objects containing departure details
      */
     List<DepartureInfo> retrieveDepartures(
             String airportCode,

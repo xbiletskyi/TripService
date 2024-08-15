@@ -8,6 +8,7 @@
      * Model class representing departure information.
      */
     public class DepartureInfo {
+
         @JsonProperty("flightNumber")
         private String flightNumber;
         @JsonProperty("departureAt")
@@ -83,6 +84,7 @@
         }
 
         // Getters and setters
+
         public String getCurrencyCode() {
             return currencyCode;
         }

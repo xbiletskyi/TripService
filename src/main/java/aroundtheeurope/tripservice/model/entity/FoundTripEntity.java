@@ -46,9 +46,26 @@ public class FoundTripEntity {
     )
     private List<FlightInfoEntity> tripSchedule;
 
+    /**
+     * Default constructor for FoundTripEntity.
+     * Initializes an empty FoundTripEntity object.
+     */
     public FoundTripEntity() {
     }
 
+    /**
+     * Parameterized constructor for FoundTripEntity.
+     *
+     * @param totalPrice      the total price of the trip
+     * @param totalFlights    the total number of flights in the trip
+     * @param uniqueCities    the number of unique cities visited during the trip
+     * @param uniqueCountries the number of unique countries visited during the trip
+     * @param departureAt     the departure time of the first flight
+     * @param arrivalAt       the arrival time of the last flight
+     * @param userId          the ID of the user who made the trip request
+     * @param requestId       the ID of the trip request
+     * @param tripSchedule    the schedule of the trip, represented as a list of FlightInfoEntity objects
+     */
     public FoundTripEntity(
             double totalPrice,
             int totalFlights,
@@ -70,6 +87,16 @@ public class FoundTripEntity {
         this.tripSchedule = tripSchedule;
     }
 
+    /**
+     * Creates a FoundTripEntity from a list of DepartureInfo objects.
+     * This method calculates the total price, number of unique cities/countries,
+     * and maps the trip schedule to FlightInfoEntity objects.
+     *
+     * @param path      the list of DepartureInfo objects representing the trip path
+     * @param userId    the ID of the user who made the trip request
+     * @param requestId the ID of the trip request
+     * @return a FoundTripEntity object populated with calculated and mapped data
+     */
     public static FoundTripEntity createFoundTripEntity(
             List<DepartureInfo> path,
             UUID userId,
@@ -101,6 +128,7 @@ public class FoundTripEntity {
     }
 
     // Getters and setters
+
     public UUID getId() {
         return id;
     }

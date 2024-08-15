@@ -18,6 +18,8 @@ import java.util.*;
 
 /**
  * Service implementation for retrieving departure information.
+ * This service interacts with an external microservice (FlightService) to fetch
+ * departure data based on specified criteria such as airport code, date range, and Schengen area.
  */
 @Service
 public class DepartureServiceImpl implements DepartureService {
@@ -28,9 +30,10 @@ public class DepartureServiceImpl implements DepartureService {
     String takeFlightsUrl;
     /**
      * Constructor for DepartureServiceImpl.
+     * Initializes the service with the necessary dependencies to make HTTP requests and process JSON data.
      *
-     * @param restTemplate the RestTemplate to make HTTP requests
-     * @param objectMapper the ObjectMapper to serialize and deserialize objects
+     * @param restTemplate the RestTemplate used to make HTTP requests
+     * @param objectMapper the ObjectMapper used to serialize and deserialize JSON objects
      */
     @Autowired
     public DepartureServiceImpl(
@@ -43,11 +46,14 @@ public class DepartureServiceImpl implements DepartureService {
 
     /**
      * Retrieves departure information from the TakeFlights microservice.
+     * Constructs a URL based on the given parameters, makes an HTTP GET request to the microservice,
+     * and processes the JSON response into a list of DepartureInfo objects.
      *
      * @param airportCode the IATA code of the airport
-     * @param date the date of departure
+     * @param date the starting date of the departure search
+     * @param dayRange the number of days to search departures from the start date
      * @param schengenOnly if true, only includes flights within the Schengen Area
-     * @return the list of DepartureInfo
+     * @return a list of DepartureInfo objects containing departure details
      */
     @Override
     public List<DepartureInfo> retrieveDepartures(
@@ -56,19 +62,26 @@ public class DepartureServiceImpl implements DepartureService {
             int dayRange,
             boolean schengenOnly
     ){
+        // Construct the URL for the FlightService microservice request
         String url = takeFlightsUrl + "origin=" + airportCode
                 + "&departureAt=" + date.toString()
                 + "&schengenOnly=" + schengenOnly
                 + "&dayRange=" + dayRange;
+
+        // Set HTTP headers and create an HttpEntity for the request
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "application/json");
         HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        // Make the HTTP GET request and retrieve the response as a string
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-        List<DepartureInfo> departureInfos = Collections.emptyList(); // Default to an empty list
+        List<DepartureInfo> departureInfos = Collections.emptyList();
 
         if (response.getBody() != null) {
             try {
-                departureInfos = objectMapper.readValue(response.getBody(), new TypeReference<List<DepartureInfo>>() {});
+                // Deserialize the JSON response into a list of DepartureInfo objects
+                departureInfos = objectMapper.readValue(response.getBody(), new TypeReference<>() {
+                });
             } catch (IOException e) {
                 e.printStackTrace();
             }

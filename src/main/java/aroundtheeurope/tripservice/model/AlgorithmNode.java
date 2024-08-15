@@ -9,6 +9,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The AlgorithmNode class represents a node used in the search algorithms for finding trips.
+ * It contains information about the current airport, date, price, the trip path taken so far,
+ * unique cities visited, and the heuristic value used to prioritize nodes during the search.
+ */
 public class AlgorithmNode {
     private String airport;
     private LocalDateTime date;
@@ -17,6 +22,16 @@ public class AlgorithmNode {
     private Set<String> uniqueCities;
     private double heuristic;
 
+    /**
+     * Constructor to initialize an AlgorithmNode with all properties to be used for Heuristic algorithm.
+     *
+     * @param airport       the current airport code
+     * @param date          the date and time at this node
+     * @param price         the cumulative price of the trip so far
+     * @param trip          the list of DepartureInfo objects representing the trip path
+     * @param heuristic     the heuristic value used to prioritize this node in the search
+     * @param uniqueCities  the set of unique cities visited so far
+     */
     public AlgorithmNode(
             String airport,
             LocalDateTime date,
@@ -32,6 +47,15 @@ public class AlgorithmNode {
         this.uniqueCities = uniqueCities;
     }
 
+    /**
+     * Constructor to initialize an AlgorithmNode without uniqueCities and heuristic.
+     * This is used for DFS algorithm without heuristic consideration
+     *
+     * @param airport the current airport code
+     * @param date    the date and time at this node
+     * @param price   the cumulative price of the trip so far
+     * @param trip    the list of DepartureInfo objects representing the trip path
+     */
     public AlgorithmNode(
             String airport,
             LocalDateTime date,
@@ -43,19 +67,27 @@ public class AlgorithmNode {
         this.trip = trip;
     }
 
+    /**
+     * Factory method to create an AlgorithmNode from string inputs and a list of trip details.
+     * It handles the parsing of the date string and initializes the unique cities set.
+     *
+     * @param airport   the current airport code
+     * @param date      the date and time as a string
+     * @param price     the cumulative price of the trip so far
+     * @param trip      the list of DepartureInfo objects representing the trip path
+     * @param heuristic the heuristic value used to prioritize this node in the search
+     * @return a new AlgorithmNode object
+     */
     public static AlgorithmNode createNode(
             String airport,
             String date,
             double price,
             List<DepartureInfo> trip,
             double heuristic) {
-        // Unique cities HashSet creation
         Set<String> uniqueCities = new HashSet<>();
         for (DepartureInfo departureInfo : trip) {
             uniqueCities.add(departureInfo.getDestinationAirportCode());
         }
-
-        // Date formatting
         LocalDateTime localDateTime;
         try {
             localDateTime = LocalDateTime.parse(date);
@@ -68,6 +100,7 @@ public class AlgorithmNode {
     }
 
     // Getters and setters
+
     public String getAirport() {
         return airport;
     }

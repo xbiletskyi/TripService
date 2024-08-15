@@ -12,16 +12,35 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * DFS (Depth-First Search) is a service that implements the TripFindingStrategy
+ * using a depth-first search approach to explore possible trip paths.
+ * This strategy is useful for finding paths by exploring as far as possible along
+ * each branch before backtracking.
+ */
 @Service
 public class DFS implements TripFindingStrategy {
 
     DepartureService departureService;
 
+    /**
+     * Constructor to initialize DFS with the required DepartureService.
+     *
+     * @param departureService the service to retrieve flight departure information
+     */
     @Autowired
     public DFS(DepartureService departureService) {
         this.departureService = departureService;
     }
 
+    /**
+     * Finds trips based on the given TripRequest and adds viable paths to the provided list.
+     * This method uses a stack to perform depth-first search, exploring each possible trip path
+     * as far as possible before backtracking.
+     *
+     * @param tripRequest the details of the trip being requested
+     * @param paths       the list to store valid trip paths found by the algorithm
+     */
     public void findTrips(
             TripRequest tripRequest,
             List<List<DepartureInfo>> paths

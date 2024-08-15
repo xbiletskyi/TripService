@@ -8,18 +8,33 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class FoundTrip {
+/**
+ * Data Transfer Object (DTO) representing a found trip.
+ * This class is used to transfer data via http endpoint,
+ * representing a trip that has been found based on provided criteria.
+ */
+public class FoundTrip extends FoundTripPreview{
 
-    private double totalPrice;
-    private int totalFlights;
-    private int uniqueCities;
-    private int uniqueCountries;
-    private LocalDateTime departureAt;
-    private LocalDateTime arrivalAt;
+    // The schedule of the trip, consisting of a list of DepartureInfo objects
     private List<DepartureInfo> tripSchedule;
 
+    /**
+     * Default constructor for FoundTrip.
+     * Initializes an empty FoundTrip object.
+     */
     public FoundTrip() {}
 
+    /**
+     * Parameterized constructor for FoundTrip.
+     *
+     * @param totalPrice the total price of the trip
+     * @param totalFlights the total number of flights in the trip
+     * @param uniqueCities the number of unique cities visited
+     * @param uniqueCountries the number of unique countries visited
+     * @param departureAt the departure time of the first flight
+     * @param arrivalAt the arrival time of the last flight
+     * @param tripSchedule the schedule of the trip, represented as a list of DepartureInfo objects
+     */
     public FoundTrip(
             double totalPrice,
             int totalFlights,
@@ -27,19 +42,31 @@ public class FoundTrip {
             int uniqueCountries,
             LocalDateTime departureAt,
             LocalDateTime arrivalAt,
+            UUID requestId,
             List<DepartureInfo> tripSchedule
     ) {
-        this.totalPrice = totalPrice;
-        this.totalFlights = totalFlights;
-        this.uniqueCities = uniqueCities;
-        this.uniqueCountries = uniqueCountries;
-        this.departureAt = departureAt;
-        this.arrivalAt = arrivalAt;
+        super(
+                totalPrice,
+                totalFlights,
+                uniqueCities,
+                uniqueCountries,
+                departureAt,
+                arrivalAt,
+                requestId
+        );
         this.tripSchedule = tripSchedule;
     }
 
+    /**
+     * Constructs a FoundTrip DTO from a FoundTripEntity.
+     * This method is used to convert a persistent entity into a DTO for data transfer.
+     *
+     * @param foundTripEntity the FoundTripEntity object to convert
+     * @return a new FoundTrip DTO object populated with data from the entity
+     */
     public static FoundTrip constructFromEntity(FoundTripEntity foundTripEntity) {
 
+        // Convert the list of FlightInfoEntity objects to a list of DepartureInfo DTOs
         List<DepartureInfo> tripSchedule = foundTripEntity.getTripSchedule().stream()
                 .map(DepartureInfo::constructFromEntity)
                 .toList();
@@ -51,58 +78,12 @@ public class FoundTrip {
                 foundTripEntity.getUniqueCountries(),
                 foundTripEntity.getDepartureAt(),
                 foundTripEntity.getArrivalAt(),
+                foundTripEntity.getRequestId(),
                 tripSchedule
         );
     }
+
     // Getters and Setters
-
-    public double getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(double totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
-    public int getTotalFlights() {
-        return totalFlights;
-    }
-
-    public void setTotalFlights(int totalFlights) {
-        this.totalFlights = totalFlights;
-    }
-
-    public int getUniqueCities() {
-        return uniqueCities;
-    }
-
-    public void setUniqueCities(int uniqueCities) {
-        this.uniqueCities = uniqueCities;
-    }
-
-    public int getUniqueCountries() {
-        return uniqueCountries;
-    }
-
-    public void setUniqueCountries(int uniqueCountries) {
-        this.uniqueCountries = uniqueCountries;
-    }
-
-    public LocalDateTime getDepartureAt() {
-        return departureAt;
-    }
-
-    public void setDepartureAt(LocalDateTime departureAt) {
-        this.departureAt = departureAt;
-    }
-
-    public LocalDateTime getArrivalAt() {
-        return arrivalAt;
-    }
-
-    public void setArrivalAt(LocalDateTime arrivalAt) {
-        this.arrivalAt = arrivalAt;
-    }
 
     public List<DepartureInfo> getTripSchedule() {
         return tripSchedule;

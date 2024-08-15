@@ -6,6 +6,11 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Entity class representing the flight information stored in the database.
+ * This class maps to the "departure_info" table and holds details about individual flights,
+ * including origin and destination information, departure time, and pricing.
+ */
 @Entity
 @Table(name = "departure_info")
 public class FlightInfoEntity {
@@ -47,9 +52,27 @@ public class FlightInfoEntity {
     @ManyToMany(mappedBy = "tripSchedule")
     private Set<FoundTripEntity> foundTrips;
 
+    /**
+     * Default constructor for FlightInfoEntity.
+     * Initializes an empty FlightInfoEntity object.
+     */
     public FlightInfoEntity() {
     }
 
+    /**
+     * Parameterized constructor for FlightInfoEntity.
+     *
+     * @param flightNumber the flight number
+     * @param departureAt the departure date and time
+     * @param originAirportName the name of the origin airport
+     * @param originAirportCode the IATA code of the origin airport
+     * @param originCountryCode the country code of the origin airport
+     * @param destinationAirportName the name of the destination airport
+     * @param destinationAirportCode the IATA code of the destination airport
+     * @param destinationCountryCode the country code of the destination airport
+     * @param price the price of the flight
+     * @param currencyCode the currency code of the price
+     */
     public FlightInfoEntity(
             String flightNumber,
             LocalDateTime departureAt,
@@ -74,6 +97,13 @@ public class FlightInfoEntity {
         this.currencyCode = currencyCode;
     }
 
+    /**
+     * Maps a DepartureInfo DTO to a FlightInfoEntity.
+     * This method is used to convert the DTO into an entity that can be persisted to the database.
+     *
+     * @param info the DepartureInfo object containing flight details
+     * @return a FlightInfoEntity object populated with the data from the DTO
+     */
     public static FlightInfoEntity mapToEntity(DepartureInfo info) {
         FlightInfoEntity entity = new FlightInfoEntity();
         entity.setFlightNumber(info.getFlightNumber());

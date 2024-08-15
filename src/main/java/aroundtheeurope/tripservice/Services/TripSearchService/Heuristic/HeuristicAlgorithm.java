@@ -11,12 +11,22 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * HeuristicAlgorithm is a service that implements the trip-finding strategy using a heuristic approach.
+ * It explores potential trip paths using a priority queue based on heuristic values, aiming to find the optimal trip.
+ */
 @Service
 public class HeuristicAlgorithm implements TripFindingStrategy {
 
     private final DepartureService departureService;
     private final HeuristicCalculator heuristicCalculator;
 
+    /**
+     * Constructor to initialize HeuristicAlgorithm with necessary services.
+     *
+     * @param departureService    the service to retrieve flight departure information
+     * @param heuristicCalculator the service to calculate heuristic values for nodes
+     */
     @Autowired
     public HeuristicAlgorithm(
             DepartureService departureService,
@@ -26,6 +36,13 @@ public class HeuristicAlgorithm implements TripFindingStrategy {
         this.heuristicCalculator = heuristicCalculator;
     }
 
+    /**
+     * Finds trips based on the given TripRequest and adds viable paths to the provided list.
+     * This method uses a priority queue to explore nodes, prioritizing those with the most promising heuristic values.
+     *
+     * @param tripRequest the details of the trip being requested
+     * @param paths       the list to store valid trip paths found by the algorithm
+     */
     public void findTrips(
             TripRequest tripRequest,
             List<List<DepartureInfo>> paths
