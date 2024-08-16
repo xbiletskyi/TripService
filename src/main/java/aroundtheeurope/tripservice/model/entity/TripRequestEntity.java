@@ -1,11 +1,9 @@
 package aroundtheeurope.tripservice.model.entity;
 
-import aroundtheeurope.tripservice.model.dto.TripRequest;
+import aroundtheeurope.tripservice.model.dto.TripRequest.TripRequestIn;
 import jakarta.persistence.*;
-import org.hibernate.annotations.Cascade;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -61,7 +59,7 @@ public class TripRequestEntity {
      *
      * @param tripRequest the TripRequest DTO containing the details of the trip request
      */
-    public TripRequestEntity(TripRequest tripRequest) {
+    public TripRequestEntity(TripRequestIn tripRequest) {
         this.userId = tripRequest.getUserId();
         this.origin = tripRequest.getOrigin();
         this.destination = tripRequest.getDestination();

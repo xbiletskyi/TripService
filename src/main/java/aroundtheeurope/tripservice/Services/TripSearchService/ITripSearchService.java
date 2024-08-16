@@ -1,6 +1,6 @@
 package aroundtheeurope.tripservice.Services.TripSearchService;
 
-import aroundtheeurope.tripservice.model.dto.TripRequest;
+import aroundtheeurope.tripservice.model.dto.TripRequest.TripRequestIn;
 import org.springframework.http.ResponseEntity;
 
 /**
@@ -16,5 +16,5 @@ public interface ITripSearchService {
      * @param tripRequest the details of the trip being requested
      * @return a ResponseEntity containing a string message (e.g., success or error message)
      */
-    ResponseEntity<String> findTrip(TripRequest tripRequest);
+    ResponseEntity<String> findTrip(TripRequestIn tripRequest);
 }

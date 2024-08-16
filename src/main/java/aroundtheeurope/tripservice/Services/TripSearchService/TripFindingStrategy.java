@@ -1,7 +1,7 @@
 package aroundtheeurope.tripservice.Services.TripSearchService;
 
 import aroundtheeurope.tripservice.model.dto.DepartureInfo;
-import aroundtheeurope.tripservice.model.dto.TripRequest;
+import aroundtheeurope.tripservice.model.dto.TripRequest.TripRequestIn;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public interface TripFindingStrategy {
      * @param paths       the list to store valid trip paths found by the strategy
      */
     void findTrips(
-            TripRequest tripRequest,
+            TripRequestIn tripRequest,
             List<List<DepartureInfo>> paths
     );
 }

@@ -4,7 +4,7 @@ import aroundtheeurope.tripservice.Services.TripSearchService.TripFindingStrateg
 import aroundtheeurope.tripservice.model.dto.DepartureInfo;
 import aroundtheeurope.tripservice.model.AlgorithmNode;
 import aroundtheeurope.tripservice.Services.DepartureService.DepartureService;
-import aroundtheeurope.tripservice.model.dto.TripRequest;
+import aroundtheeurope.tripservice.model.dto.TripRequest.TripRequestIn;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +44,7 @@ public class HeuristicAlgorithm implements TripFindingStrategy {
      * @param paths       the list to store valid trip paths found by the algorithm
      */
     public void findTrips(
-            TripRequest tripRequest,
+            TripRequestIn tripRequest,
             List<List<DepartureInfo>> paths
     ) {
         PriorityQueue<AlgorithmNode> openSet = new PriorityQueue<>(

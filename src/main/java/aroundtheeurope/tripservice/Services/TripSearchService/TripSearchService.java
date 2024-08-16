@@ -7,7 +7,7 @@ import aroundtheeurope.tripservice.model.entity.FoundTripEntity;
 
 import aroundtheeurope.tripservice.Services.TripSearchService.DFS.DFS;
 import aroundtheeurope.tripservice.Services.TripSearchService.Heuristic.HeuristicAlgorithm;
-import aroundtheeurope.tripservice.model.dto.TripRequest;
+import aroundtheeurope.tripservice.model.dto.TripRequest.TripRequestIn;
 import aroundtheeurope.tripservice.model.entity.TripRequestEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -64,7 +64,7 @@ public class TripSearchService implements ITripSearchService {
      * @return a ResponseEntity containing a success message or an indication that no trips were found
      */
     @Override
-    public ResponseEntity<String> findTrip(TripRequest tripRequest) {
+    public ResponseEntity<String> findTrip(TripRequestIn tripRequest) {
 
         // Convert the TripRequest DTO to an entity and save it to the database
         TripRequestEntity tripRequestEntity = new TripRequestEntity(tripRequest);

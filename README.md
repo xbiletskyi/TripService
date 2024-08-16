@@ -5,10 +5,11 @@ The 'Trip' microservice is part of a larger project to find "Chained trip" betwe
 [The overall project description](https://medium.com/@vidime.sa.buduci.rok/explore-europe-by-plane-using-this-tool-0cb52ac69b8b).
 
 ## Purpose Overview
-The microservice looks for all feasible routes which satisfy the given parameters. This is the main logical core of the project designed to find adequate routes effectively.
+The microservice looks for all feasible routes which satisfy the given parameters. This is the main logical core of the
+project designed to find adequate routes effectively.
 
 ## Technologies Used
-- Java
+- Java 21
 - Spring Boot
 - Gradle
 - PostgreSQL
@@ -31,18 +32,19 @@ find feasible paths, and the Departure Service retrieves flight data from the Fl
 Constructs several feasible routes within the given criteria. Requires UI-significant amount of time.
 
 #### Parameters
-| Name               | Type    | Required | Default    | Description                                                |
-|--------------------|---------|----------|------------|------------------------------------------------------------|
-| `origin`           | String  | Yes      | None       | The IATA code of the departure airport                     |
-| `destination`      | String  | No       | `origin`   | The IATA code of the destination airport                   |
-| `departureAt`      | String  | Yes      | None       | The date to start the trip in the format `yyyy-MM-dd`      |
-| `returnBefore`     | String  | No       | 3000-01-01 | The date to end the trip before in the format `yyyy-MM-dd` |
-| `budget`           | double  | Yes      | None       | Maximum amount of money spent on trips                     |
-| `maxStay`          | int     | No       | 1          | Maximum days between two flights                           |
-| `minStay`          | int     | No       | 1          | Minimum days between two flights                           |
-| `schengenOnly`     | boolean | No       | false      | If `true`, only includes flights within the Schengen Area  |
-| `timeLimitSeconds` | int     | No       | 10         | Working time for an algorithm to find feasible trips       |
-| `excludedAirports` | Array<String> | No | None       | Airports to avoid during search                            |
+| Name               | Type          | Required | Default    | Description                                                |
+|--------------------|---------------|----------|------------|------------------------------------------------------------|
+| `origin`           | String        | Yes      | None       | The IATA code of the departure airport                     |
+| `destination`      | String        | No       | `origin`   | The IATA code of the destination airport                   |
+| `departureAt`      | String        | Yes      | None       | The date to start the trip in the format `yyyy-MM-dd`      |
+| `returnBefore`     | String        | No       | 3000-01-01 | The date to end the trip before in the format `yyyy-MM-dd` |
+| `budget`           | double        | Yes      | None       | Maximum amount of money spent on trips                     |
+| `maxStay`          | int           | No       | 1          | Maximum days between two flights                           |
+| `minStay`          | int           | No       | 1          | Minimum days between two flights                           |
+| `schengenOnly`     | boolean       | No       | false      | If `true`, only includes flights within the Schengen Area  |
+| `timeLimitSeconds` | int           | No       | 10         | Working time for an algorithm to find feasible trips       |
+| `excludedAirports` | Array<String> | No       | None       | Airports to avoid during search                            |
+| `userId`           | UUID``        | Yes      | None       | Unique user identifier the search is associated with       |
 
 #### Responses
 - **200 OK**
@@ -141,17 +143,15 @@ curl -X GET "http://localhost:60001/api/v1/trips/preview?userId=<UUID>"
 
 ### Get results
 #### URL
-`GET /api/v1/trips`
+`GET /api/v1/trips/{requestId}`
 
 #### Description
 Retrieve the whole results information for user or specific request
 
 #### Parameters
-| Name               | Type    | Required | Default    | Description                                                |
-|--------------------|---------|----------|------------|------------------------------------------------------------|
-| `userId`           | UUID    | No       | None       | Specific user to return all related search results         |
-| `requestId`        | UUID    | No       | None       | Specific request to return the results                     |
-*Note: either userId or requestId must be provided*
+| Name        | Type    | Required | Default    | Description                                   |
+|-------------|---------|----------|------------|-----------------------------------------------|
+| `requestId` | UUID    | Yes      | None       | Specific request to return all search results |
 
 #### Responses
 - **200 OK**
@@ -243,6 +243,48 @@ curl -X GET http://localhost:60001/api/v1/trips?userId=628baaa4-4052-4a07-bd2e-b
   ...
 ]
 ```
+
+### Get requests
+
+#### URL
+`GET /api/v1/trips/requests/{userId}`
+
+#### Description 
+Retrieve all user's requests
+
+#### Parameters
+| Name     | Type    | Required | Default    | Description                                          |
+|----------|---------|----------|------------|------------------------------------------------------|
+| `userId` | UUID    | Yes      | None       | Unique user identifier to return all search requests |
+
+#### Responses
+- **200 OK**
+  - **Description**: At least one request was found
+  - **Body**:
+  ```json
+    [
+      {
+      "userId": "UUID",
+      "origin": "IATA code",
+      "destination": "IATA code",
+      "departureAt": "ISO 8601 date-time",
+      "returnBefore": "ISO 8601 date-time",
+      "budget": "double",
+      "maxStay": "int",
+      "minStay": "int",
+      "schengenOnly": "boolean",
+      "limitTimeSeconds": "int",
+      "excludedAirports": "List<IATA code>"
+      },
+      ...
+    ]
+  ```
+- **204 No Content**
+  - **Description**: No request was found for the specified user
+  - **Body**: `null`
+- **500 Internal Server Error**
+  - **Description**: Data retrieval error
+  - **Body**: `null`
 
 [//]: # (## How to run)
 

@@ -1,10 +1,11 @@
 package aroundtheeurope.tripservice.controller;
 
-import aroundtheeurope.tripservice.Services.TripRetrieveService.ITripRetrieveService;
+import aroundtheeurope.tripservice.Services.RetrieveService.IRetrieveService;
 import aroundtheeurope.tripservice.Services.TripSearchService.ITripSearchService;
 import aroundtheeurope.tripservice.model.dto.FoundTrip;
 import aroundtheeurope.tripservice.model.dto.FoundTripPreview;
-import aroundtheeurope.tripservice.model.dto.TripRequest;
+import aroundtheeurope.tripservice.model.dto.TripRequest.TripRequestIn;
+import aroundtheeurope.tripservice.model.dto.TripRequest.TripRequestOut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ import java.util.UUID;
 public class TripsController {
 
     private final ITripSearchService tripSearchService;
-    private final ITripRetrieveService tripRetrieveService;
+    private final IRetrieveService tripRetrieveService;
 
     /**
      * Constructor for TripsController, initializing the trip search and retrieve services.
@@ -33,7 +34,7 @@ public class TripsController {
     @Autowired
     public TripsController(
             ITripSearchService tripSearchService,
-            ITripRetrieveService tripRetrieveService
+            IRetrieveService tripRetrieveService
     ) {
         this.tripSearchService = tripSearchService;
         this.tripRetrieveService = tripRetrieveService;
@@ -46,7 +47,7 @@ public class TripsController {
      * @return a ResponseEntity containing the search results or an error status
      */
     @PostMapping
-    public ResponseEntity<String> findTrips(@RequestBody TripRequest tripRequest) {
+    public ResponseEntity<String> findTrips(@RequestBody TripRequestIn tripRequest) {
         try {
             // Delegates the trip search to the service layer
             return tripSearchService.findTrip(tripRequest);
@@ -78,33 +79,52 @@ public class TripsController {
     }
 
     /**
-     * Endpoint to retrieve detailed trip information based on user ID or request ID.
+     * Endpoint to retrieve detailed trip information based on user ID.
      *
-     * @param userId the unique identifier of the user (optional)
-     * @param requestId the unique identifier of the trip request (optional)
+     * @param userId the unique identifier of the user
      * @return a ResponseEntity containing a list of found trips or an error status
      */
     @GetMapping
-    public ResponseEntity<List<FoundTrip>> getTrips(
-            @RequestParam(required = false) UUID userId,
-            @RequestParam(required = false) UUID requestId
-    ) {
-        List<FoundTrip> foundTrips;
-
-        // Retrieves trips based on the provided request ID or user ID
-        if (userId != null) {
-            foundTrips = tripRetrieveService.retrieveByUser(userId);
-        } else if (requestId != null) {
-            foundTrips = tripRetrieveService.retrieveByRequest(requestId);
-        } else {
-            // Returns a 400 Bad Request status if neither userId nor requestId is provided
-            return ResponseEntity.badRequest().body(null);
-        }
+    public ResponseEntity<List<FoundTrip>> getTripsByUser(@RequestParam(required = false) UUID userId) {
+        List<FoundTrip> foundTrips = tripRetrieveService.retrieveByUser(userId);
 
         if (foundTrips.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        // Returns the found trips with a 200 OK status
+
         return ResponseEntity.ok().body(foundTrips);
+    }
+
+    /**
+     * Endpoint to retrieve detailed information about specific request's result
+     *
+     * @param requestId the unique identifier of previous search request
+     * @return a ResponseEntity containing a list of found trips by the request's parameters
+     */
+    @GetMapping("/{requestId}")
+    public ResponseEntity<List<FoundTrip>> getTripsByRequest(@PathVariable UUID requestId) {
+        List<FoundTrip> foundTrips = tripRetrieveService.retrieveByRequest(requestId);
+
+        if (foundTrips.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok().body(foundTrips);
+    }
+
+    /**
+     * Endpoint to retrieve requests' details issued by the user
+     *
+     * @param userId a unique identifier of a user
+     * @return requests' details issued by the user
+     */
+    @GetMapping("/requests")
+    public ResponseEntity<List<TripRequestOut>> getRequests(@RequestParam UUID userId) {
+        List<TripRequestOut> requests = tripRetrieveService.retrieveRequestByUser(userId);
+        if (requests.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok().body(requests);
     }
 }

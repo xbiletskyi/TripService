@@ -1,7 +1,9 @@
-package aroundtheeurope.tripservice.Services.TripRetrieveService;
+package aroundtheeurope.tripservice.Services.RetrieveService;
 
 import aroundtheeurope.tripservice.model.dto.FoundTrip;
 import aroundtheeurope.tripservice.model.dto.FoundTripPreview;
+import aroundtheeurope.tripservice.model.dto.TripRequest.TripRequestIn;
+import aroundtheeurope.tripservice.model.dto.TripRequest.TripRequestOut;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,7 +13,7 @@ import java.util.UUID;
  * Implementations of this interface are responsible for retrieving found trips
  * and trip previews based on user IDs or request IDs.
  */
-public interface ITripRetrieveService {
+public interface IRetrieveService {
 
     /**
      * Retrieves a list of trip previews for a specific user.
@@ -37,5 +39,6 @@ public interface ITripRetrieveService {
      */
     public List<FoundTrip> retrieveByUser(UUID userid);
 
+    public List<TripRequestOut> retrieveRequestByUser(UUID userid);
 }
 
